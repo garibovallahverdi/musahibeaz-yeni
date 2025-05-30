@@ -4,7 +4,7 @@ import Link from 'next/link';
 import React from 'react';
 import { formatLocalizedDate } from '~/utils/dateFormater';
 
-const RelatedNewsCard = ({ data }: { data: Article }) => {
+const RelatedNewsCard = ({ data }: { data: any }) => {
   return (
     <div className="bg-card_bg   rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <Link href={`/news/${data.category}/${data.slug}`}>

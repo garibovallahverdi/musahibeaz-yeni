@@ -16,7 +16,17 @@ const Home = async () => {
     <div className="flex flex-col">
       {article && (
         <div className="flex flex-col ">
-          <Carousel data={article.article} />
+          <Carousel
+            data={article.article.map((a: any) => ({
+              ...a,
+              content: a.content ?? "",
+              status: a.status ?? "DRAFT",
+              createdAt: a.createdAt ?? new Date(),
+              updatedAt: a.updatedAt ?? new Date(),
+              authorId: a.authorId ?? "",
+              categoryId: a.categoryId ?? null,
+            }))}
+          />
           <Slider />
         </div>
       )}

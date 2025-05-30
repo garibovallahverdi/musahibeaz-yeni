@@ -12,7 +12,7 @@ import { logger } from "better-auth";
 
 const Page = () => {
   const [page, setPage] = useState(1);
-  const [author, setAuthors] = useState();
+  const [author, setAuthors] = useState<string | undefined>();
   const limit = 3; // Sayfa başına kaç kayıt geleceğini belirle
   const [status,setStatus] = useState<ArticleStatus>(ArticleStatus.DRAFT)
   const user =  useUser()

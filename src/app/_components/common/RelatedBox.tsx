@@ -18,7 +18,7 @@ const RelatedBox = ({ tags ,currentSlug}: { tags: Tag[],currentSlug:string }) =>
           <h3 className="text-2xl font-semibold text-titleText">Oxsar xəbərlər</h3>
           <div className="gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
             {
-            data?.map((related: Article ) => (
+            data?.map((related ) => (
               <RelatedNewsCard key={related.id} data={related} />
             ))
             }
