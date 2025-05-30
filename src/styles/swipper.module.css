@@ -1,0 +1,60 @@
+/* Pagination container */
+.swiper-pagination {
+    position: absolute;
+    bottom: 20px !important; /* Pagination'ın alt boşluğu */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Daireler arası boşluk */
+  }
+  
+  /* Pagination daireleri */
+  .swiper-pagination-bullet {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(255, 0, 0, 0.5); /* Yarı saydam beyaz */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  /* Aktif pagination dairesi */
+  .swiper-pagination-bullet-active {
+    background-color: #ffffff; /* Tam opak beyaz */
+    width: 14px;
+    height: 14px;
+  }
+  
+  /* Hover efekti */
+  .swiper-pagination-bullet:hover {
+    background-color: rgba(255, 255, 255, 0.8); /* Daha opak beyaz */
+  }
+
+  /* Carousel.module.css */
+.paginationContainer {
+    position: absolute;
+    bottom: 20px !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .paginationBullet {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(34, 204, 71, 0.795);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .paginationBulletActive {
+    background-color: #ffffff;
+    width: 14px;
+    height: 14px;
+  }
+  
+  .paginationBullet:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+  }

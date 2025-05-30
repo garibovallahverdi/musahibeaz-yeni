@@ -1,0 +1,358 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mod Renkleri */
+    --background: 255 255 255; /* Saf Beyaz */
+    --card_bg: 245 245 245; /* Çok Açık Gri */
+    --titleText: 15 15 15; /* Neredeyse Siyah */
+    --tagText: 100 100 100; /* Orta Gri */
+    --contentText: 50 50 50; /* Koyu Gri */
+    --border: 220 220 220; /* Açık Gri */
+
+    /* Light Mod Hover Renkleri */
+    --hoverTitle: 0 119 182; /* Canlı Mavi */
+    --hoverTag: 0 95 150; /* Daha koyu mavi */
+    --hoverContent: 0 75 120; /* Daha koyu bir ton */
+
+    /* Light Mod Buton Renkleri */
+    --buttonBg: 0 119 182; /* Canlı Mavi */
+    --buttonText: 255 255 255; /* Beyaz */
+    --buttonHoverBg: 0 95 150; /* Daha koyu mavi */
+    --buttonDisabledBg: 200 200 200; /* Açık Gri */
+    --buttonDisabledText: 150 150 150; /* Gri */
+
+    /* Light Mod Özel Durum Renkleri */
+    --success: 46 204 113; /* Canlı Yeşil */
+    --warning: 241 196 15; /* Altın Sarısı */
+    --danger: 231 76 60; /* Canlı Kırmızı */
+
+    /* Light Mod Input Renkleri */
+    --inputBg: 255 255 255; /* Beyaz */
+    --inputBorder: 200 200 200; /* Açık Gri */
+    --inputPlaceholder: 160 160 160; /* Gri */
+  }
+
+  .dark {
+    /* Dark Mod Renkleri */
+    --background: 18 18 18; /* Çok Koyu Gri */
+    --card_bg: 28 28 28; /* Koyu Gri */
+    --titleText: 240 240 240; /* Açık Gri */
+    --tagText: 180 180 180; /* Orta Gri */
+    --contentText: 200 200 200; /* Hafif Açık Gri */
+    --border: 60 60 60; /* Daha Koyu Gri */
+
+    /* Dark Mod Hover Renkleri */
+    --hoverTitle: 0 199 190; /* Turkuaz */
+    --hoverTag: 0 170 160; /* Daha koyu turkuaz */
+    --hoverContent: 0 140 130; /* Daha koyu yeşil */
+
+    /* Dark Mod Buton Renkleri */
+    --buttonBg: 0 199 190; /* Turkuaz */
+    --buttonText: 255 255 255; /* Beyaz */
+    --buttonHoverBg: 0 170 160; /* Daha koyu turkuaz */
+    --buttonDisabledBg: 60 60 60; /* Koyu Gri */
+    --buttonDisabledText: 120 120 120; /* Açık Gri */
+
+    /* Dark Mod Özel Durum Renkleri */
+    --success: 46 204 113; /* Canlı Yeşil */
+    --warning: 241 196 15; /* Altın Sarısı */
+    --danger: 231 76 60; /* Canlı Kırmızı */
+
+    /* Dark Mod Input Renkleri */
+    --inputBg: 28 28 28; /* Koyu Gri */
+    --inputBorder: 60 60 60; /* Daha koyu gri */
+    --inputPlaceholder: 120 120 120; /* Açık Gri */
+}
+}
+html {
+  background-color: var(--background) !important
+}
+
+body {
+  /* color: rgb(var(--contentText)); */
+  /* background-color: var(--background) */
+}
+/* Hover Stilleri */
+.hover-title {
+  @apply transition-all duration-300 ease-in-out;
+  color: rgb(var(--titleText));
+}
+
+.hover-title:hover {
+  color: rgb(var(--hover-title));
+}
+
+.hover-tag {
+  @apply transition-all duration-300 ease-in-out;
+  color: rgb(var(--tagText));
+}
+
+.hover-tag:hover {
+  color: rgb(var(--hover-tag));
+}
+
+.hover-content {
+  @apply transition-all duration-300 ease-in-out;
+  color: rgb(var(--contentText));
+}
+
+.hover-content:hover {
+  color: rgb(var(--hover-content));
+}
+
+/* Font Stilleri */
+.poppins-thin { font-family: "Poppins", sans-serif; font-weight: 100; font-style: normal; }
+.poppins-extralight { font-family: "Poppins", sans-serif; font-weight: 200; font-style: normal; }
+.poppins-light { font-family: "Poppins", sans-serif; font-weight: 300; font-style: normal; }
+.poppins-regular { font-family: "Poppins", sans-serif; font-weight: 400; font-style: normal; }
+.poppins-medium { font-family: "Poppins", sans-serif; font-weight: 500; font-style: normal; }
+.poppins-semibold { font-family: "Poppins", sans-serif; font-weight: 600; font-style: normal; }
+.poppins-bold { font-family: "Poppins", sans-serif; font-weight: 700; font-style: normal; }
+.poppins-extrabold { font-family: "Poppins", sans-serif; font-weight: 800; font-style: normal; }
+.poppins-black { font-family: "Poppins", sans-serif; font-weight: 900; font-style: normal; }
+
+/* Scrollbar Gizleme */
+::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+
+/* Yükleme çubuğunun rengini özelleştirin */
+
+
+
+
+
+
+
+
+.ql-container {
+  min-height: 300px;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  color: black;
+}
+
+.ql-editor img {
+  max-width: 1000px; /* Resmin genişliğini %100 yaparak ekrana tam uyum sağlarız */
+  height: 600px;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  margin: 10px auto ;
+  resize: both; /* Resmin boyutunu hem yatay hem dikey olarak değiştirme */
+  overflow: hidden;
+}
+
+.ql-editor {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.ql-editor p {
+  color: var(--foreground);
+  flex: 1 1 100%; /* Paragrafların tamamını metin alanında gösterir */
+}
+
+.ql-editor img.float-left {
+  float: left; /* Resmi sola yaslayarak metni sağda gösterir */
+  margin-right: 10px;
+  max-width: 60%; /* Resmi yüzde 45 genişliğe ayarlıyoruz */
+}
+
+
+.ql-editor img.float-right {
+  float: right; /* Resmi sağa yaslayarak metni solda gösterir */
+  margin-left: 10px;
+  max-width: 60%; /* Resmi yüzde 45 genişliğe ayarlıyoruz */
+}
+
+.ql-editor .ql-clearfix {
+  clear: both;
+}
+.ql-toolbar {
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+  background-color: white;
+}
+
+
+
+
+
+
+.news-detail-content {
+  line-height: 1.7;
+  font-size: 1rem;
+  color: rgb(var(--contentText));
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+
+
+.news-detail-content img {
+  @apply mx-auto h-auto max-w-full w-[90%] object-cover rounded-lg max-h-[400px]; 
+}
+
+
+/* Başlık Stilleri */
+.news-detail-content h1,
+.news-detail-content h2,
+.news-detail-content h3 {
+  font-weight: bold;
+  margin-bottom: 14px;
+  color: rgb(var(--titleText));
+  line-height: 1.3;
+}
+
+.news-detail-content h1 {
+  font-size: 1.6rem;
+}
+
+.news-detail-content h2 {
+  font-size: 1.4rem;
+}
+
+.news-detail-content h3 {
+  font-size: 1.2rem;
+}
+
+/* Metin ve Paragraf Stilleri */
+.news-detail-content p {
+  margin-bottom: 14px;
+  font-size: 1rem;
+  text-align: justify;
+}
+
+/* Mobil Cihazlar İçin Yazı Tipi Küçültme */
+@media (max-width: 768px) {
+  .news-detail-content p {
+    font-size: 0.95rem;
+  }
+
+  .news-detail-content h1 {
+    font-size: 1.4rem;
+  }
+
+  .news-detail-content h2 {
+    font-size: 1.2rem;
+  }
+
+  .news-detail-content h3 {
+    font-size: 1.1rem;
+  }
+}
+
+/* Vurgulu Metin */
+.news-detail-content span {
+  background-color: transparent !important;
+  color: rgb(var(--contentText)) !important;
+}
+
+/* Liste Stilleri */
+.news-detail-content ul {
+  padding-left: 18px;
+  margin-bottom: 14px;
+}
+
+.news-detail-content ul li {
+  margin-bottom: 6px;
+  padding-left: 8px;
+  position: relative;
+}
+
+.news-detail-content ul li::before {
+  content: "•";
+  color: rgb(var(--titleText));
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* Blockquote Stilleri */
+.news-detail-content blockquote {
+  border-left: 4px solid rgb(var(--titleText));
+  padding: 8px 16px;
+  margin: 15px 0;
+  font-style: italic;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+
+/* Link Stilleri */
+.news-detail-content a {
+  color: #007acc;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.news-detail-content a:hover {
+  text-decoration: underline;
+  color: #005faa;
+}
+
+/* Kod Blokları */
+.news-detail-content pre {
+  padding: 12px;
+  background: #1e1e1e;
+  color: #f8f8f8;
+  border-radius: 5px;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+
+.news-detail-content code {
+  font-family: "Fira Code", monospace;
+  font-size: 0.9rem;
+}
+
+
+/* Mobil için Kod Bloklarını Küçült */
+@media (max-width: 768px) {
+  .news-detail-content pre {
+    font-size: 0.85rem;
+  }
+
+  .news-detail-content code {
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablolar */
+.news-detail-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+.news-detail-content th,
+.news-detail-content td {
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.news-detail-content th {
+  background: rgba(0, 0, 0, 0.05);
+  font-weight: bold;
+}
+
+/* Mobil İçin Tablo Kaydırılabilir Olsun */
+@media (max-width: 768px) {
+  .news-detail-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}
+

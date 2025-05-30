@@ -1,0 +1,98 @@
+"use client";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import NewsCard from "~/app/_components/common/NewsCard";
+import { api } from "~/trpc/react";
+import type { Article } from "@prisma/client";
+import SkeletonLoader from "~/app/_components/general/SkeletonLoader";
+
+type NewsContainerProps = {
+  initialData: { articles: Article[]; count: number; nextCursor?: string };
+  tag: string;
+  limit: number;
+};
+
+const NewsContainerByTag = ({ initialData, tag, limit }: NewsContainerProps) => {
+  const [articles, setArticles] = useState<Article[]>(initialData.articles);
+  const [nextCursor, setNextCursor] = useState<string | undefined>(initialData.nextCursor);
+  const [isFetching, setIsFetching] = useState(false);
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
+  console.log("Başlangıç nextCursor:", nextCursor);
+
+  // useQuery kullanımı: Hook sadece bileşen içinde çağrılmalı!
+  const trpcClient = api.useContext();
+  
+  // Veriyi çekme fonksiyonu
+  const fetchMoreData = useCallback(async () => {
+    if (!nextCursor || isFetching) return;
+
+    console.log("Yeni veri çekiliyor...");
+    setIsFetching(true);
+
+    try {
+      const response = await trpcClient.public.tag.getArticleBytag.fetch({
+        tag,
+        limit,
+        cursor: nextCursor,
+      });
+
+      console.log("API Yanıtı:", response);
+
+      if (response?.articles.length > 0) {
+        setArticles((prev) => [...prev, ...response.articles]);
+        setNextCursor(response?.nextCursor ?? undefined);
+      } else {
+        console.log("Daha fazla veri yok.");
+        setNextCursor(undefined);
+      }
+    } catch (error) {
+      console.error("Veri yüklenirken hata oluştu:", error);
+    }
+    setIsFetching(false);
+  }, [nextCursor, isFetching, tag, limit, trpcClient]);
+
+  // Intersection Observer ayarı
+  useEffect(() => {
+    if (!observerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && nextCursor) {
+          void fetchMoreData();
+        }
+      },
+      { rootMargin: "100px", threshold: 1.0 }
+    );
+
+    observer.observe(observerRef.current);
+    return () => observer.disconnect();
+  }, [fetchMoreData, nextCursor]);
+
+  console.log(articles.length, "Makale sayısı");
+  
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {articles.map((article) => (
+          <NewsCard article={article} key={article.id} />
+        ))}
+       
+      </div>
+
+      {isFetching && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4  mt-6">
+          <SkeletonLoader />
+          <SkeletonLoader />
+          <SkeletonLoader />
+        </div>
+      )}
+      {/* Yükleniyor göstergesi */}
+     
+
+      {/* Observer'ın hedef noktası */}
+      <div ref={observerRef} className="h-5" />
+    </div>
+  );
+};
+
+export default NewsContainerByTag;
