@@ -9,13 +9,13 @@ interface Tag {
   name: string;
 }
 
-const RelatedBox = ({ tags ,currentSlug}: { tags: Tag[],currentSlug:string }) => {
+const RelatedBox = ({ tags ,currentSlug, category}: { tags: Tag[],currentSlug:string, category:string }) => {
 
       const {data, isPending} =  api.public.article.getRelatedNews.useQuery({ tags: tags ?? [],currentSlug });
     
   return (
        <div className="lg:col-span-1 space-y-6">
-          <h3 className="text-2xl font-semibold text-titleText">Oxsar xəbərlər</h3>
+          <h3 className="text-2xl font-semibold text-titleText">{category}</h3>
           <div className="gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
             {
             data?.map((related ) => (

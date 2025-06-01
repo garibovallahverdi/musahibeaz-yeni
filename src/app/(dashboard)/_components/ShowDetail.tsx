@@ -91,7 +91,7 @@ const ShowDetail = ({ news }: { news: News  }) => {
   }, [optimizedContent, modalImage]); // optimizedContent değiştiğinde yeniden çalışır
   
   return (
-    <div className="lg:col-span-2 space-y-6">
+    <div className="">
       <div className="flex justify-between text-sm text-gray-500">
         <span className="flex items-center gap-2">
           <BsCalendar2 />

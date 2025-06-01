@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import ShowDetail from "~/app/(dashboard)/_components/ShowDetail";
 import RelatedBox from "~/app/_components/common/RelatedBox";
 import RelatedNewsCard from "~/app/_components/common/RelatedNewsCard";
+import LatestNews from "~/app/_components/layout/LatestNews";
 import Slider from "~/app/_components/layout/Slider";
 import { api } from "~/trpc/server";
 
@@ -29,15 +30,27 @@ export async function generateMetadata(props: { params: Params }): Promise<Metad
 export default async function Page(props: { params: Params }) {
   const { slug } = await props.params;
   const news = await api.public.article.getById({ slug });
+    const initialData2 = await api.public.article.getStepNews({ limit: 8, page: 1 });
   
   return (
     <div className="w-full max-w-7xl mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Ana Haber İçeriği */}
+        <div className="lg:col-span-2 space-y-6">
+
          <ShowDetail news={news}/>
+        {news?.tags && <RelatedBox category="Vacib Xəbərlər" currentSlug={news.slug} tags={news.tags}/>}
+        </div>
+
 
         {/* Oxsar Xəbərlər (Benzer Haberler) */}
-        {news?.tags && <RelatedBox currentSlug={news.slug} tags={news.tags}/>}
+        
+        <div className="lg:col-span-1 space-y-6">
+
+        {news?.tags && <RelatedBox category="Oxşar Xəbərlər" currentSlug={news.slug} tags={news.tags}/>}
+                  <LatestNews initialData={initialData2} />
+        </div>
+        
       </div>
       <div className="flex flex-col">
         <div>

@@ -8,17 +8,20 @@ export const tagPublicRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
         try {
         
-          const tags = await ctx.db.tag.findMany({
-            take: 8,
-            orderBy: {
-              news: {
-                _count: 'desc'  
-              }
-            }, 
-                  
-          });
+       const tags = await ctx.db.tag.findMany({
+  where: {
+    news: {
+      some: {}, // yalnız news ilə əlaqəsi olan tag-lər
+    },
+  },
+  orderBy: {
+    news: {
+      _count: 'desc',
+    },
+  },
+  take: 8,
+});
     
-
 
     
           return tags;
@@ -105,7 +108,7 @@ export const tagPublicRouter = createTRPCRouter({
           })
         );
 
-        return filteredCategories.filter(Boolean); // Null olanları kaldır
+        return categories
 
       } catch (error) {
         if (error instanceof Error) {

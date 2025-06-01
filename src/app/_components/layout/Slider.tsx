@@ -51,7 +51,7 @@ const Slider = () => {
                   href={`/news/${article.category}/${article.slug}`}
                   className="mt-4 inline-block px-4 py-2 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <h3 className="text-xl font-bold mb-4 drop-shadow-2xl">
+                  <h3 className="text-base line-clamp-2 mb-4 drop-shadow-2xl">
                     {article.title}
                   </h3>
                 </Link>

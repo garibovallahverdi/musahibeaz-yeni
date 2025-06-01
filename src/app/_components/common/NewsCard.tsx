@@ -15,7 +15,7 @@ category: string;
 }
 const NewsCard = ({ article }: { article: Article }) => {
   return (
-    <div className="bg-card_bg shadow-md rounded-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
+    <div className="bg-  rounded-lg overflow-hidden transition-transform duration-300 hover:shadow-xl hover:-translate-y-1">
       <Link href={`/news/${article.category}/${article.slug}`} className="block group">
         {/* Resim Alanı */}
         <div className="relative h-48 w-full overflow-hidden">
@@ -35,7 +35,7 @@ const NewsCard = ({ article }: { article: Article }) => {
         </div>
 
         {/* İçerik Alanı */}
-        <div className="p-4 text-contentText">
+        <div className="p-2 text-contentText">
           {/* Tarih */}
           <div className="flex items-center text-sm text-gray-500 mb-2">
             <FiCalendar className="text-md text-gray-400 mr-2" />

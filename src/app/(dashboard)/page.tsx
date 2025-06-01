@@ -4,18 +4,21 @@ import Steps from '../_components/layout/Steps';
 import MainPageCategpry from './_components/MainPageCategpry';
 import Slider from '../_components/layout/Slider';
 import { api } from '~/trpc/server';
+import LatestNews from '../_components/layout/LatestNews';
 
-export const revalidate = 60;  // 60 saniyede bir yeniden oluşturulacak
+export const revalidate = 30;  // 60 saniyede bir yeniden oluşturulacak
 
 const Home = async () => {
   // Veriyi server-side cache ile alıyoruz (Incremental Static Regeneration)
   const article = await api.public.article.galeryNews();
   const initialData = await api.public.article.getStepNews({ limit: 5, page: 1 });
+  const initialData2 = await api.public.article.getStepNews({ limit: 20, page: 1 });
 
   return (
-    <div className="flex flex-col">
+    <div className="grid grid-cols-1 lg:grid-cols-6 gap-2 ">
+      <div className="lg:col-span-4">
       {article && (
-        <div className="flex flex-col ">
+
           <Carousel
             data={article.article.map((a: any) => ({
               ...a,
@@ -27,8 +30,7 @@ const Home = async () => {
               categoryId: a.categoryId ?? null,
             }))}
           />
-          <Slider />
-        </div>
+        
       )}
       {initialData.articles.length > 0 && <Steps initialData={initialData} />}
 
@@ -39,6 +41,13 @@ const Home = async () => {
         {/* <MainPageCategpry category="Elm və Texnologiya" /> */}
         {/* <MainPageCategpry category="Mədəniyyət" /> */}
       </div>
+
+          </div>
+
+      <div className="lg:col-span-2">
+            
+          <LatestNews initialData={initialData2} />
+          </div>
     </div>
   );
 };

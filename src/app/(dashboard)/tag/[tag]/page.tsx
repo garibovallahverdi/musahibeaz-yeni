@@ -15,7 +15,7 @@ const Page = async ({ params, searchParams }: PageProps) => {
 
   // İlk yüklemede server-side veri getir
   const data = await api.public.tag.getArticleBytag({ limit, tag, cursor });
-
+  console.log("Server-side veri:", data);
   if (!data || data instanceof Error) {
     return <p>Data yoxdur</p>;
   }

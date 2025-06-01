@@ -30,11 +30,11 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
   }, [data]);
 
   return (
-    <div className="container mx-auto px-5 py-10">
-      <div className="grid md:grid-cols-5 gap-6 md:gap-10 items-start">
+    <div className="container mx-auto grid grid-cols-1 p-0 my-4  ">
+      <div className="grid md:grid-cols-5    gap-6 md:gap-2 items-start">
         
         {/* Ana Haber Alanı */}
-        <div className="relative w-full col-span-5 md:col-span-3 h-[300px] sm:h-[400px] md:h-[500px] rounded-lg overflow-hidden shadow-2xl">
+        <div className="relative w-full col-span-5 md:col-span-3 h-[300px] sm:h-[400px]  rounded-lg overflow-hidden shadow-2xl">
           <AnimatePresence mode="wait">
             { selectedArticle && (
               <motion.div
@@ -69,7 +69,7 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
         </div>
 
         {/* Haber Listesi */}
-        <div className="col-span-5 md:col-span-2 p-2">
+        <div className="col-span-5 md:col-span-2 p-">
           <ul className="space-y-2 sm:space-y-3">
             {isFetching
               ? Array.from({ length: 5 }).map((_, index) => (
@@ -84,7 +84,7 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedArticle(article)}
-                    className={`p-3 sm:p-4 font-light border-b border-border text-contentText text-xs sm:text-sm transition rounded-lg cursor-pointer hover:bg-card_bg 
+                    className={`p-3 sm:p-4 font-light border-b border-border text-contentText text-sm sm:text-xs transition rounded-lg cursor-pointer hover:bg-card_bg 
                   ${selectedArticle?.id === article.id ? "bg-card_bg" : ""}
                   h-16 flex items-center`}
                   >
