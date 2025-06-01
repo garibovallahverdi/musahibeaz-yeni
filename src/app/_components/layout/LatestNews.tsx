@@ -5,62 +5,70 @@ import Link from "next/link";
 import { formatLocalizedDate } from "~/utils/dateFormater";
 import type { Article } from "@prisma/client";
 
-const LatestNews = ({ initialData }: { initialData: { articles: Article[], totalPages: number } }) => {
+const LatestNews = ({
+  initialData,
+}: {
+  initialData: { articles: Article[]; totalPages: number };
+}) => {
   const articles = initialData.articles;
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold text-titleText mb-4 pl-2 sm:pl-4">Son Xəbərlər</h2>
-      <div className=" sm:p-4">
-        <ul className="flex flex-col gap-3">
-          {articles.map((article) => (
-            <motion.li
-              key={article.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className={`p-3 sm:p-4 font-normal border rounded-lg cursor-pointer transition duration-200 ease-in-out
-              bg-card_bg text-contentText border-border flex items-center gap-4`}
-              style={{
-                backgroundColor: "rgb(var(--card_bg))",
-                color: "rgb(var(--contentText))",
-                borderColor: "rgb(var(--border))",
-              }}
-            >
-              {/* {article.imageUrl?.[0] && (
-                <div className="relative w-20 h-16 sm:w-24 sm:h-20 flex-shrink-0 rounded overflow-hidden">
-                  <Image
-                    src={article.imageUrl[0]}
-                    alt={article.title}
-                    layout="fill"
-                    objectFit="cover"
-                    className="rounded"
-                  />
-                </div>
-              )} */}
-              <div className="flex flex-col flex-grow gap-1 sm:gap-2">
-                <Link
-                  href={`/news/${article.category}/${article.slug}`}
-                  className="flex-grow text-sm sm:text-base font-semibold leading-tight hover:text-hoverTitle transition-colors duration-200"
-                  style={{
-                    color: "rgb(var(--titleText))",
-                  }}
-                  onMouseOver={(e) =>
-                    (e.currentTarget.style.color = "rgb(var(--hoverTitle))")
-                  }
-                  onMouseOut={(e) =>
-                    (e.currentTarget.style.color = "rgb(var(--titleText))")
-                  }
-                >
-                  {article.title}
-                </Link>
-                <span className="text-xs" style={{ color: "rgb(var(--tagText))" }}>
-                  {formatLocalizedDate(article.publishedAt || new Date())}
-                </span>
+      <h2 className="mb-4 pl-2 text-2xl font-bold text-titleText sm:pl-4">
+        Son Xəbərlər
+      </h2>
+
+      {/* GRID — xs/sm → 2 kolon   md → 3 kolon   lg+ → 1 kolon  */}
+      <ul className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
+        {articles.map((article) => (
+          <motion.li
+            key={article.id}
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            className="flex items-center gap-4 rounded-lg border p-3 font-normal transition duration-200 ease-in-out sm:p-4"
+            style={{
+              backgroundColor: "rgb(var(--card_bg))",
+              color: "rgb(var(--contentText))",
+              borderColor: "rgb(var(--border))",
+            }}
+          >
+            {/* Küçük ekranlarda görsel, lg’de gizli */}
+            {article.imageUrl?.[0] && (
+              <div className="relative h-16 w-20 flex-shrink-0 overflow-hidden rounded sm:h-20 sm:w-24 lg:hidden">
+                <Image
+                  src={article.imageUrl[0]}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                />
               </div>
-            </motion.li>
-          ))}
-        </ul>
-      </div>
+            )}
+
+            <div className="flex flex-col flex-grow gap-1 sm:gap-2">
+              <Link
+                href={`/news/${article.category}/${article.slug}`}
+                className="text-sm font-semibold leading-tight transition-colors duration-200 sm:text-base"
+                style={{ color: "rgb(var(--titleText))" }}
+                onMouseOver={(e) =>
+                  (e.currentTarget.style.color = "rgb(var(--hoverTitle))")
+                }
+                onMouseOut={(e) =>
+                  (e.currentTarget.style.color = "rgb(var(--titleText))")
+                }
+              >
+                {article.title}
+              </Link>
+
+              <span
+                className="text-xs"
+                style={{ color: "rgb(var(--tagText))" }}
+              >
+                {formatLocalizedDate(article.publishedAt || new Date())}
+              </span>
+            </div>
+          </motion.li>
+        ))}
+      </ul>
     </div>
   );
 };
