@@ -9,7 +9,11 @@ const config = {
     eslint: {
         ignoreDuringBuilds: true,
       },
-     
+
+    rules: {
+    'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
+  },
+
     images: {
       remotePatterns: [
         {
