@@ -1,58 +1,65 @@
 import { z } from "zod";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { adminProcedure, createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import Fuse from "fuse.js";
 
-export const tagRouter = createTRPCRouter({
+export const adminTagRouter = createTRPCRouter({
 
-    create: publicProcedure
-    .input(z.object({
-        tag:z.string().min(2,"Minumum 2 hərf olmalıdır")
-    }))
-    .mutation(async({ctx, input})=>{
+   create: adminProcedure
+  .input(z.object({
+    tag: z.string().min(2, "Minimum 2 hərf olmalıdır"),
+    categoryId: z.string()
+  }))
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const rawTag = input.tag.toLowerCase().trim();
 
-        try {
-                
-       const exsistTag = await ctx.db.tag.findUnique({
-        where:{
-            name:input.tag.toLowerCase().trim(),
-        }
-    })
-    
-    
+      // Zaten var mı kontrolü
+      const exsistTag = await ctx.db.tag.findUnique({
+        where: {
+          name: rawTag,
+        },
+      });
 
-            if(exsistTag){
-                throw new Error("Məlumat zatən mövcudur.")
-            }
+      if (exsistTag) {
+        throw new Error("Məlumat zatən mövcuddur.");
+      }
 
-      const normalizeTagvalue = input.tag
-                                .replace(/[ı]/g, "i")
-                                .replace(/[ə]/g, "e")
-                                .replace(/[ə]/g, "e")
-                                .replace(/[ü]/g, "u")
-                                .toLowerCase().trim()
+      // normalize kelimeleri tek tek ve tre ile birleştir
+      const normalizeTagvalue = rawTag
+        .split(" ")
+        .map((word) =>
+          word
+            .replace(/ı/g, "i")
+            .replace(/ə/g, "e")
+            .replace(/ü/g, "u")
+            .replace(/ç/g, "c")
+            .replace(/ş/g, "s")
+            .replace(/ğ/g, "g")
+        )
+        .join("-");
 
-            const newTag = await ctx.db.tag.create({
-                data:{
-                    name:input.tag.toLowerCase().trim(),
-                    tagValue:normalizeTagvalue
+      const newTag = await ctx.db.tag.create({
+        data: {
+          name: rawTag,
+          tagValue: normalizeTagvalue,
+          categoryId: input.categoryId,
+        },
+      });
 
-                }
-            })
+      return newTag;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error("Tag yaradılarkən xəta baş verdi. " + error.message);
+      } else {
+        throw new Error("Tag yaradılarkən bilinməyən bir xəta baş verdi.");
+      }
+    }
+  }),
 
-            return newTag
-            
-        } catch (error) {
-            if (error instanceof Error) {
-                throw new Error("Tag yaradilarkən xəta baş verdi. " + error.message);
-              } else {
-                throw new Error("Tag yaradılarkən bilinməyən bir xəta baş verdi.");
-              }
-        }
-    }),
 
-    
-    remove: publicProcedure
+
+    remove: adminProcedure
     .input(z.object({
         tag:z.string()
     }))
@@ -80,7 +87,7 @@ export const tagRouter = createTRPCRouter({
         }
     }),
 
-    list:publicProcedure
+    list:adminProcedure
     .input(z.object({
         search:z.string().optional()
     }))

@@ -25,7 +25,7 @@ const LatestNews = ({
             key={article.id}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
-            className="flex items-center gap-4 rounded-lg border p-3 font-normal transition duration-200 ease-in-out sm:p-4"
+            className="flex items-center gap-4 rounded-lg border p-3 font-normal transition duration-200 ease-in-out "
             style={{
               backgroundColor: "rgb(var(--card_bg))",
               color: "rgb(var(--contentText))",
@@ -47,7 +47,7 @@ const LatestNews = ({
             <div className="flex flex-col flex-grow gap-1 sm:gap-2">
               <Link
                 href={`/news/${article.category}/${article.slug}`}
-                className="text-sm font-semibold leading-tight transition-colors duration-200 sm:text-base"
+                className="text-sm font-semibold leading-tight transition-colors duration-200 "
                 style={{ color: "rgb(var(--titleText))" }}
                 onMouseOver={(e) =>
                   (e.currentTarget.style.color = "rgb(var(--hoverTitle))")

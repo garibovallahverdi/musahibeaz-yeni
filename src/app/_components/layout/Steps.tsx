@@ -1,11 +1,24 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Article } from "@prisma/client";
 import { api } from "~/trpc/react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
+type Article = {
+  id: string;
+  category: string;
+  slug: string;
+  title: string;
+  description: string;
+  categorie: {
+    name: string;
+    urlName: string;
+
+  };
+  imageUrl: string[] | null;
+  publishedAt: Date | null;
+};
 const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages: number } }) => {
   const [articles, setArticles] = useState<Article[]>(initialData.articles);
   const [page, setPage] = useState(1);
@@ -24,7 +37,15 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
 
   useEffect(() => {
     if (data) {
-      setArticles(data.articles);
+      setArticles(
+        data.articles.map((article) => ({
+          ...article,
+          categorie: {
+            name: article.category, // or provide a fallback if needed
+            urlName: article.category, // or provide a fallback if needed
+          },
+        }))
+      );
       setTotalPages(data.totalPages);
     }
   }, [data]);
@@ -46,7 +67,7 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
                 className="relative w-full h-full"
               >
                 <Image
-                  src={selectedArticle.imageUrl[0] ?? "/fallback-image.webp"}
+                  src={selectedArticle.imageUrl?.[0] ?? "/fallback-image.webp"}
                   alt={selectedArticle.title ?? ""}
                   layout="fill"
                   objectFit="cover"
@@ -57,7 +78,7 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
                   <h2 className="text-xl sm:text-2xl font-bold line-clamp-2">{selectedArticle.title}</h2>
                   <p className="text-xs sm:text-sm line-clamp-3 mt-2">{selectedArticle.description}</p>
                   <Link
-                    href={`/news/${selectedArticle.category}/${selectedArticle.slug}`}
+                    href={`/news/${selectedArticle.categorie.urlName}/${selectedArticle.slug}`}
                     className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 text-sm sm:text-base"
                   >
                     Dəvamını Oxu

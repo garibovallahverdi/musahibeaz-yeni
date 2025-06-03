@@ -54,7 +54,6 @@ export default async function Page(props: { params: Params }) {
       </div>
       <div className="flex flex-col">
         <div>
-          <h2 className="text-2xl text-titleText pl-2">Son Xəbərlər</h2>
         </div>
 
                {/* <Slider/> */}

@@ -27,12 +27,20 @@ const Page = () => {
   }, [user])
 
   // API'den verileri çek
-  const { data, isLoading, isError , error } = api.admin.news.newsListAdmin.useQuery({
-    status: status,
-    limit,
-    authorId: author,
-    page,
-  });
+  const query = author === undefined
+    ? api.admin.article.newsListAdmin.useQuery({
+        status: status,
+        limit,
+        page,
+      })
+    : api.editor.article.newsListEditor.useQuery({
+        status: status,
+        limit,
+        authorId: author,
+        page,
+      });
+
+  const { data, isLoading, isError, error } = query;
 
   // Yükleniyor ekranı
   if (isLoading) return <Loading/>;

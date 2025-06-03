@@ -8,10 +8,13 @@ import { MdOutlineCancel } from "react-icons/md";
 import { useTheme } from "~/app/providers/ThemeProvider";
 import TagsList from "./TagList";
 import SearchInput from "../common/SearchInput";
+import { useSelectedCategory } from "~/app/providers/CategoryProvider";
+// import { useCategories } from "~/app/providers/CategoryProvider";
 
 type Category = {
   id: string;
   name: string;
+  urlName: string;
   createdAt: Date;
   updatedAt: Date;
 } | null;
@@ -35,25 +38,26 @@ const truncateWords = (label: string, maxWords = 2) => {
   return words.length > maxWords ? words.slice(0, maxWords).join(" ") + "…" : label;
 };
 
-export default function Navbar({ category, tag }: { category: Category[]; tag: Tag[] }) {
+export default function Navbar({ category }: { category: Category[] }) {
   const [mobileMenu, setIsMobileMenu] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   const allRoutes = [
     { href: "/", label: "Əsas səhifə" },
     ...(category?.map((c) => ({
-      href: `/news/${c?.name}`,
+      href: `/news/${c?.urlName}`,
       label: c?.name 
     })) ?? []),
   ];
+
+
 
   const mainLinks = allRoutes.slice(0, 5);
   const moreLinks = allRoutes.slice(5);
 
   return (
-    <nav className="bg-background border-b border-gray-200 dark:border-gray-700 shadow-sm z-50">
+    <nav className="bg-background border-b  border-gray-200 dark:border-gray-700 shadow-sm z-50">
       {/* Mobil Menü */}
       {mobileMenu && (
         <div className="fixed inset-0 z-[999] bg-background dark:bg-gray-900 flex flex-col p-8">
@@ -71,7 +75,7 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
                 href={route.href}
                 prefetch={false}
                 onClick={() => setIsMobileMenu(false)}
-                className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 truncate"
+                className="text-lg font-semibold uppercase text-gray-900 dark:text-white hover:text-blue-600 truncate"
               >
                 {route.label}
               </Link>
@@ -81,12 +85,12 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
       )}
 
       {/* Desktop Navbar */}
-      <div className="max-w-screen-xl mx-auto px-4">
+      <div className="max-w-screen-xl relative mx-auto px-4 ">
         <div className="flex items-center justify-between h-16 relative">
           {/* Logo */}
           <Link href="/" prefetch={false} className="flex items-center space-x-2">
             <Image width={32} height={32} src="/logo.png" alt="Logo" className="h-8 w-8" />
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">Musahibe.az</span>
+            <span className="text-2xl hidden sm:block font-bold text-gray-900 dark:text-white">Musahibe.az</span>
           </Link>
 
           {/* Menü - Desktop */}
@@ -96,7 +100,7 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
                 key={idx}
                 href={link.href}
                 prefetch={false}
-                className="max-w-max  whitespace-nowrap overflow-hidden text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm"
+                className="max-w-max uppercase whitespace-nowrap overflow-hidden text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm"
                 title={link.label}
               >
                 {link.label}
@@ -104,7 +108,7 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
             ))}
 
             {moreLinks.length > 0 && (
-              <div className="relative">
+              <div className="">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm flex items-center"
@@ -114,7 +118,7 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
 
                 {dropdownOpen && (
                   <div
-                    className="absolute right-0 top-full w-screen max-w-xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg mt-2 z-50"
+                    className="absolute left-0 top-full w-full  bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg mt-2 z-50"
                     onMouseLeave={() => setDropdownOpen(false)}
                   >
                     <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -141,9 +145,7 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
 
           {/* Sağ Butonlar */}
           <div className="flex items-center space-x-3">
-            <button onClick={() => setShowSearch(!showSearch)} className="p-2 text-gray-900 dark:text-white hover:text-blue-600">
-              {showSearch ? <FiX size={20} /> : <FiSearch size={20} />}
-            </button>
+          
             <button onClick={toggleTheme} className="p-2 text-gray-900 dark:text-white hover:text-blue-600">
               {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
@@ -154,9 +156,9 @@ export default function Navbar({ category, tag }: { category: Category[]; tag: T
         </div>
 
         {/* TagList ya da Search */}
-        <div className="w-full flex items-center justify-between py-4">
-          {showSearch ? <SearchInput /> : <TagsList tag={tag ?? []} />}
-        </div>
+        {/* <div className="w-full flex items-center justify-between py-4">
+          <TagsList tag={tag ?? []} />
+        </div> */}
       </div>
     </nav>
   );

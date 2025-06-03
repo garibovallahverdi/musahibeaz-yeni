@@ -14,7 +14,7 @@ const NewsDetail =   () => {
       const user =  useUser()
     
 
-  const { data, isLoading, isError, refetch } = api.admin.news.getById.useQuery({slug:slug},    
+  const { data, isLoading, isError, refetch } = api.admin.article.getById.useQuery({slug:slug},    
     {
       // Only fetch if slug is available
       enabled: !!slug,
@@ -30,7 +30,7 @@ const NewsDetail =   () => {
     }
 );
 
-   const { mutate: publishArticle,  isPending } = api.admin.news.publish.useMutation({
+   const { mutate: publishArticle,  isPending } = api.admin.article.publish.useMutation({
     onSuccess: () => {
     void  refetch(); 
     },
@@ -39,7 +39,7 @@ const NewsDetail =   () => {
     },
   });
 
-  const { mutate: archiveArticle,  isPending: archivingPending } = api.admin.news.archived.useMutation({
+  const { mutate: archiveArticle,  isPending: archivingPending } = api.admin.article.archived.useMutation({
     onSuccess: () => {
       void refetch(); 
     },

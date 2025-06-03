@@ -148,7 +148,7 @@ export const isAdminMiddleware = t.middleware(({ ctx, next }) => {
 
 export const isEditorMiddleware = t.middleware(({ ctx, next }) => {
   if (ctx.session?.user.role != 'editor') {
-    throw new Error("User is not admin");
+    throw new Error("User is not editor");
   }
   
  

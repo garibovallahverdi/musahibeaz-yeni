@@ -14,8 +14,21 @@ import "swiper/css/effect-fade";
 import "swiper/css/thumbs"; // Başparmak görselleri için CSS
 
 // Veri tipi
-import type { Article } from "@prisma/client";
 
+type Article = {
+  id: string;
+  category: string;
+  slug: string;
+  title: string;
+  description: string;
+  categorie: {
+    name: string;
+    urlName: string;
+
+  };
+  imageUrl: string[] | null;
+  publishedAt: Date | null;
+};
 const Carousel = ({ data }: { data: Article[] }) => {
   if (data.length === 0) return null;
 
@@ -60,14 +73,14 @@ const Carousel = ({ data }: { data: Article[] }) => {
               <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 md:p-10 text-white z-20">
                 {/* Kategori Etiketi - Daha belirgin */}
                 {article.category && (
-                  <span className="inline-block bg-blue-700 bg-opacity-90 text-xs sm:text-sm font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider shadow-lg"> {/* bg-opacity-90 ve shadow-lg */}
-                    {article.category}
+                  <span className="inline-block bg-blue-700 bg-opacity-90 text-[10px] sm:text-sm font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wider shadow-lg"> {/* bg-opacity-90 ve shadow-lg */}
+                    {article.categorie.name }
                   </span>
                 )}
                 
                 {/* Başlık - Daha büyük ve daha net */}
-                <h3 className="text-3xl  font-extrabold leading-tight mb-3 drop-shadow-xl"> {/* Boyutlar ve mb-3 artırıldı */}
-                  <Link href={`/news/${article.category}/${article.slug}`} className="hover:text-gray-100 transition-colors duration-300"> {/* hover:text-gray-100 daha net */}
+                <h3 className="text-sm sm:text-3xl  font-extrabold leading-tight mb-3 drop-shadow-xl"> {/* Boyutlar ve mb-3 artırıldı */}
+                  <Link href={`/news/${article.categorie.urlName}/${article.slug}`} className="hover:text-gray-100 transition-colors duration-300"> {/* hover:text-gray-100 daha net */}
                     {article.title}
                   </Link>
                 </h3>
@@ -79,13 +92,13 @@ const Carousel = ({ data }: { data: Article[] }) => {
                 </span>
 
                 {/* Devamını Oku Butonu - Daha vurucu */}
-                <Link
+                {/* <Link
                   href={`/news/${article.category}/${article.slug}`}
                   className="mt-6 inline-flex items-center justify-center bg-red-700 hover:bg-red-800 text-white text-sm lg:text-base px-4 py-2 lg:px-7 lg:py-3 font-semibold rounded-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5" // Daha koyu kırmızı, daha fazla padding
                 >
                   Ətraflı Oxu
                   <svg className="ml-2 -mr-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L12.586 12H4a1 1 0 110-2h8.586l-2.293-2.293a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd"></path></svg>
-                </Link>
+                </Link> */}
               </div>
             </SwiperSlide>
           ))}

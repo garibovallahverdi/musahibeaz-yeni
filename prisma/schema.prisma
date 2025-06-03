@@ -44,14 +44,18 @@ model Tag {
   name  String   @unique
   tagValue String @default("")
   news  Article[]   @relation("Tags") 
+  categoryId    String
+  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
 
 
 model Category {
-   id    String   @id @default(uuid()) 
+  id    String   @id @default(uuid()) 
   name  String   @unique
+  urlName String @unique
+  tags   Tag[]
   article  Article[]
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())

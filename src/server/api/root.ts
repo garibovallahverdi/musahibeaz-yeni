@@ -1,11 +1,13 @@
 import { articleRouter } from "~/server/api/routers/public/article";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
-import { newsRouter } from "./routers/admin/news";
-import { tagRouter } from "./routers/admin/tag";
 import { tagPublicRouter } from "./routers/public/tag";
 import { userRouter } from "./routers/user";
 import { adminUserRouter } from "./routers/admin/users";
-import { storageRouter } from "./routers/admin/storage";
+import { adminArticleRouter } from "./routers/admin/news";
+import { adminTagRouter } from "./routers/admin/tag";
+import { editorArticleRouter } from "./routers/editor/news";
+import { storageRouter } from "./routers/editor/storage";
+import { editorGeneralRouter } from "./routers/editor/general";
 /**
  * This is the primary router for your server.
  *
@@ -17,12 +19,15 @@ export const appRouter = createTRPCRouter({
     tag:tagPublicRouter
   },
   admin: {
-    news:newsRouter,
-    tag:tagRouter,
+    article:adminArticleRouter,
+    tag:adminTagRouter,
     users:adminUserRouter,
-    storage: storageRouter, 
+  },
 
-    
+  editor: {
+    article:editorArticleRouter,
+    storage: storageRouter,
+    general: editorGeneralRouter
   },
   user: userRouter,
 });

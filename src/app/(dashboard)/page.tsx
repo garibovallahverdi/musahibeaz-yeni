@@ -32,12 +32,22 @@ const Home = async () => {
           />
         
       )}
-      {initialData.articles.length > 0 && <Steps initialData={initialData} />}
+      {initialData.articles.length > 0 && (
+        <Steps
+          initialData={{
+            ...initialData,
+            articles: initialData.articles.map((item: any) => ({
+              ...item,
+              categorie: item.categorie ?? { name: '', urlName: '' },
+            })),
+          }}
+        />
+      )}
 
       {/* Kategoriler İçin Dinamik Veri */}
       <div className="flex flex-col gap-6">
-        <MainPageCategpry category="İdman" />
-        <MainPageCategpry category="Siyasət" />
+        <MainPageCategpry category="idman" />
+        <MainPageCategpry category="siyaset" />
         {/* <MainPageCategpry category="Elm və Texnologiya" /> */}
         {/* <MainPageCategpry category="Mədəniyyət" /> */}
       </div>

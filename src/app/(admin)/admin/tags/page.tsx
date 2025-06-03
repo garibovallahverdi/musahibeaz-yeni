@@ -1,111 +1,127 @@
-'use client'
-import React, { useState } from 'react'
+'use client';
+import React, { useState } from 'react';
 import { api } from '~/trpc/react';
 import Loading from '../_components/loading';
-import { CiBookmarkRemove } from "react-icons/ci";
+import SkeletonLoader from '~/app/_components/general/SkeletonLoader';
+import { CiBookmarkRemove } from 'react-icons/ci';
 import { toast } from 'sonner';
 
+const TagPage = () => {
+  const [newTag, setNewTag] = useState('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
 
-const TagPage =  () => {
-  const [newTag, setNewTag] = useState("");
+  /* --- veriler --- */
+  const {
+    data: tags,
+    isLoading: isLoadingTags,
+    refetch: refetchTags,
+  } = api.admin.tag.list.useQuery({});
 
-     const { data, isLoading, isError , refetch} = api.admin.tag.list.useQuery({});
+  const {
+    data: categories,
+    isLoading: isLoadingCategories,
+  } = api.admin.article.getAllCategory.useQuery(undefined, {
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
 
-
-     const { mutate: addTag, isPending: isAdding } = api.admin.tag.create.useMutation({
+  /* --- mutasyonlar --- */
+  const { mutate: addTag, isPending: isAdding } =
+    api.admin.tag.create.useMutation({
       onSuccess: () => {
-        void refetch(); 
-        setNewTag(""); 
+        void refetchTags();
+        setNewTag('');
+        toast.success('Tag uğurla əlavə olundu');
       },
-      onError: (error) => {
-
-        console.error( error.message);
-        toast.error(error.message)
-      },
+      onError: (e) => toast.error(e.message),
     });
 
-    const { mutate: removeTag, isPending: isRemoving } = api.admin.tag.remove.useMutation({
-      onSuccess: () => {
-        void refetch(); 
-      },
-      onError: (error) => {
-
-        console.error( error.message);
-        toast.error(error.message)
-      },
+  const { mutate: removeTag, isPending: isRemoving } =
+    api.admin.tag.remove.useMutation({
+      onSuccess: () => void refetchTags(),
+      onError: (e) => toast.error(e.message),
     });
-  
-    const handleRemoveTag = (tag:string) => {
-      removeTag({ tag: tag });
-    }
-    const handleAddTag = () => {
-      if (!newTag.trim()) return;
-      addTag({ tag: newTag });
-    }
 
+  /* --- handler --- */
+  const handleAddTag = () => {
+    if (!newTag.trim() || !selectedCategoryId)
+      return toast.warning('Zəhmət olmasa etiket və kateqoriya seçin');
+    addTag({ tag: newTag, categoryId: selectedCategoryId });
+  };
 
-     if (isLoading) return <Loading/>;
-     if (isError) return <p>Veri alınırken hata oluştu.</p>;
+  /* --- yükleme --- */
+  if (isLoadingTags || isLoadingCategories) return <Loading />;
+
   return (
-    <div className="grid lg:grid-cols-4 gap-3 items-start mx-auto p-6 bg- shadow-md rounded-md">
-       {/* Yeni etiket ekleme */}
-    <div className="flex col-span-2 justify-center items-center gap-2">
-      <div className='flex flex-col gap-2 w-full  justify-center'>
-      <label htmlFor="addTag" className='text-xl font-semibold'>Tag əlavə et</label>
-      <input
-      name='addTag'
-        type="text"
-        value={newTag}
-        onChange={(e) => setNewTag(e.target.value)}
-        className="border p-2 rounded-md flex-1"
-        placeholder="Yeni etiket gir..."
+    <div className="grid gap-6 rounded-md bg-white p-6 shadow md:grid-cols-2">
+      {/* ------------ Yeni tag ekleme ------------- */}
+      <div className="flex flex-col gap-4">
+        <h2 className="text-xl font-semibold">Yeni Tag əlavə et</h2>
+
+        {/* Etiket input */}
+        <input
+          type="text"
+          value={newTag}
+          onChange={(e) => setNewTag(e.target.value)}
+          placeholder="Yeni etiket..."
+          className="rounded border p-2"
         />
-        </div>
-      <button
-        onClick={handleAddTag}
-        className="bg-blue-500 h-1/2 self-end text-white px-4 py-2 rounded-md"
-        disabled={isAdding}
-      >
-        {isAdding ? "Ekleniyor..." : "Ekle"}
-      </button>
+
+        {/* Kategori seçimi */}
+        <select
+          value={selectedCategoryId}
+          onChange={(e) => setSelectedCategoryId(e.target.value)}
+          className="rounded border p-2"
+        >
+          <option value="">Kateqoriya seç...</option>
+          {categories?.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Ekle butonu */}
+        <button
+          onClick={handleAddTag}
+          disabled={isAdding}
+          className="self-start rounded bg-blue-600 px-4 py-2 text-white disabled:opacity-50"
+        >
+          {isAdding ? 'Əlavə olunur…' : 'Əlavə et'}
+        </button>
+      </div>
+
+      {/* ------------ Tag listesi ------------- */}
+      <div>
+        <h2 className="mb-4 text-xl font-semibold">Mövcud Taglər</h2>
+
+        {isRemoving && (
+          <p className="mb-2 text-sm text-red-500">Tag silinir…</p>
+        )}
+
+        {!tags?.length ? (
+          <p>Tag mövcud deyil</p>
+        ) : (
+          <ul className="flex flex-wrap gap-2">
+            {tags.map((t) => (
+              <li
+                key={t.id}
+                className="flex items-center gap-2 rounded bg-gray-100 px-2 py-1"
+              >
+                #{t.name}
+                <CiBookmarkRemove
+                  onClick={() => removeTag({ tag: t.name })}
+                  className="cursor-pointer text-lg text-red-600 hover:text-red-700"
+                />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
-  <div className='col-span-2'>
-  <h2 className="text-xl font-semibold mb-4">Etiketler</h2>
+  );
+};
 
-{/* Mevcut etiketleri listeleme */}
-{isLoading ? (
-  <p>Yükleniyor...</p>
-) : (
-  <div className='flex flex-col gap-3'>
-    {
-      isRemoving && <p   className='px-5 text-sm text-danger '>Tag silinir...</p>  
-    }
-    
-  <ul className="flex flex-wrap">
-    {data?.map((tag) => (
-      <li key={tag.id} className="px-2 py-1 flex gap-2 items-center bg-gray-100 rounded-md  mr-2 mb-2">
-       <span className='flex gap-2'>
-        #{tag.name}
-        </span> 
-        <div className='group  relative'>
-
-        <CiBookmarkRemove onClick={()=>handleRemoveTag(tag.name)} className='text-lg cursor-pointer text-danger'/>
-        <span className="absolute -top-14 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 bg-gray-800 text-white text-xs px-3 py-1 rounded-md shadow-md transition-opacity duration-200">
-          Sil
-        </span>
-        </div>
-
-      </li>
-    ))}
-  </ul>
-  </div>
-
-)}
-  </div>
-   
-  </div>
-  )
-  
-}
-
-export default TagPage
+export default TagPage;

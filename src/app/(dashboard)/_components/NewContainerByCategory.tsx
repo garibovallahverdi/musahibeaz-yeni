@@ -1,106 +1,157 @@
 "use client";
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import NewsCard from "~/app/_components/common/NewsCard";
+
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  MutableRefObject,
+} from "react";
 import { api } from "~/trpc/react";
+import NewsCard from "~/app/_components/common/NewsCard";
 import SkeletonLoader from "~/app/_components/general/SkeletonLoader";
+import Link from "next/link";
 
 type Article = {
+  id: string;
   category: string;
-    slug: string;
-    title: string;
-    description: string;
-    imageUrl: string[] | null;
-    publishedAt: Date | null;
-    id: string;
-  }
+  slug: string;
+  title: string;
+  description: string;
+  categorie: {
+    name: string;
+    urlName: string;
+
+  };
+  imageUrl: string[] | null;
+  publishedAt: Date | null;
+};
+
+
+type Tag = {
+  id: string;
+  name: string; 
+  tagValue: string;
+}
+type Category = {
+  id: string;
+  name: string; 
+  urlName: string;
+  tags: Tag[];
+}
+
 type NewsContainerProps = {
   initialData: { articles: Article[]; count: number; nextCursor?: string };
   category: string;
   limit: number;
+  categoryData?: Category; // optional, if you want to pass category data
 };
 
-const NewsContainerByCategory = ({ initialData, category, limit }: NewsContainerProps) => {
+const NewsContainerByCategory = ({
+  initialData,
+  category,
+  categoryData,
+  limit,
+}: NewsContainerProps) => {
+  /* ----------------- state ----------------- */
   const [articles, setArticles] = useState<Article[]>(initialData.articles);
-  const [nextCursor, setNextCursor] = useState<string | undefined>(initialData.nextCursor);
+  const [nextCursor, setNextCursor] = useState<string | undefined>(
+    initialData.nextCursor
+  );
   const [isFetching, setIsFetching] = useState(false);
-  const observerRef = useRef<HTMLDivElement | null>(null);
 
-  console.log("Başlangıç nextCursor:", nextCursor);
 
-  // useQuery kullanımı: Hook sadece bileşen içinde çağrılmalı!
+ console.log(categoryData, "categoryData aaaaaaaa");
+ 
+
+  /* ----------------- tRPC ctx --------------- */
   const trpcClient = api.useContext();
-  
-  // Veriyi çekme fonksiyonu
+
+
+
+  /* ----------------- fetch more ------------- */
   const fetchMoreData = useCallback(async () => {
-    console.log(nextCursor, "nextCursor");
-    
-    if (!nextCursor  || isFetching) return;
+    if (!nextCursor || isFetching) return;
 
-    console.log("Yeni veri çekiliyor...");
     setIsFetching(true);
-
     try {
-      const response = await trpcClient.public.article.getNewsByCategory.fetch({
+      const res = await trpcClient.public.article.getNewsByCategory.fetch({
         category,
         limit,
         cursor: nextCursor,
       });
 
-      console.log("API Yanıtı:", response);
-
-      if (response?.articles.length > 0) {
-        setArticles((prev) => [...prev, ...(response.articles as Article[])]);
-        setNextCursor(response?.nextCursor ?? undefined);
-      } else {
-        console.log("Daha fazla veri yok.");
-        setNextCursor(undefined);
-      }
-    } catch (error) {
-      console.error("Veri yüklenirken hata oluştu:", error);
+      setArticles((prev) => [...prev, ...(res.articles as Article[])]);
+      setNextCursor(res.nextCursor ?? undefined);
+    } catch (e) {
+      console.error("Infinite-scroll fetch error:", e);
     }
     setIsFetching(false);
   }, [nextCursor, isFetching, category, limit, trpcClient]);
 
-  // Intersection Observer ayarı
+  /* ----------------- observer --------------- */
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    if (!observerRef.current) return;
+    const node = sentinelRef.current;
+    if (!node) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && nextCursor) {
-          void fetchMoreData();
-        }
+        const first = entries[0];
+        if (first && first.isIntersecting) void fetchMoreData();
       },
-      { rootMargin: "100px", threshold: 1.0 }
+      {
+        root: null,         // viewport
+        rootMargin: "100px",
+        threshold: 0.1,    // %100 görünürlük yeterli
+      }
     );
-
-    observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [fetchMoreData, nextCursor]);
-
-  console.log(articles.length, "Makale sayısı");
   
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [fetchMoreData, nextCursor]); // kategori değişirse yeni observer kur
+
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {articles.map((article) => (
-          <NewsCard article={article} key={article.id} />
-        ))}
+      <p className="pl-2 text-2xl text-titleText uppercase">{categoryData?.name}</p>
+      <div className="flex gap-3">
+    {
+          categoryData?.tags && categoryData.tags.length > 0 ? (
+            categoryData.tags.map((tag) => (
+              <Link
+                key={tag.id}
+                href={`/tag/${tag.tagValue}`}
+                className="pl-2 text-sm text-tagText px-2 py-1 border w-max border-border"
+              >
+                {tag.name}
+              </Link>
+            ))
+          ) : (
+            <span className="text-sm text-gray-500">Bu kateqoriyada tag yoxdur</span>
+          )}
        
+      </div>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {articles.map((a) => (
+          <NewsCard key={a.id} article={a} />
+        ))}
       </div>
 
       {isFetching && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4  mt-6">
+        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <SkeletonLoader />
           <SkeletonLoader />
           <SkeletonLoader />
           <SkeletonLoader />
         </div>
       )}
-      {/* Yükleniyor göstergesi */}
-     
 
-      {/* Observer'ın hedef noktası */}
-      <div ref={observerRef} className="h-5" />
+      {/* sentinel */}
+{articles.length > 0 && (
+  <div ref={sentinelRef} className="h-10 w-full" />
+)}
     </div>
   );
 };

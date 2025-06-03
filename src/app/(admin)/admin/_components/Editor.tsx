@@ -32,15 +32,15 @@ const Editor = () => {
   const [oldContent,setOldContent]=useState("")
   const [loading, setLoading] =useState(false)
   const [isMounted, setIsMounted] = useState(false);
-  
-  const { data:updatedata, isLoading:updateLoading, isError:updateError , refetch:updateFetch} = api.admin.news.getById.useQuery({slug});
+
+  const { data:updatedata, isLoading:updateLoading, isError:updateError , refetch:updateFetch} = api.editor.article.getById.useQuery({slug});
 
 
-       const { data:tagData, isLoading, isError , refetch} = api.admin.tag.list.useQuery({search:tag});
+       const { data:tagData, isLoading, isError , refetch} = api.editor.general.listTags.useQuery({search:tag});
 
 
-       const { data:categoryData, isLoading:categoryLoading, isError:categoryErr,} = api.admin.news.getAllCategory.useQuery();
-  
+       const { data:categoryData, isLoading:categoryLoading, isError:categoryErr,} = api.editor.general.listCategory.useQuery();
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -86,12 +86,12 @@ const Editor = () => {
     const value = event.target.value;
     setSelectedCategory(value);
   };
-  const mutation = api.admin.news.create.useMutation({
+  const mutation = api.editor.article.create.useMutation({
     onError: (error) => {
       toast.error(error.message);
     },
     onSuccess: () => {
-      toast.success("News created successfully");
+      toast.success("Article created successfully");
     },
   });
 
@@ -204,8 +204,8 @@ const Editor = () => {
 
 
 
-const uploadImageMutation = api.admin.storage.uploadFile.useMutation();
-const deleteImageMutation = api.admin.storage.deleteFile.useMutation();
+const uploadImageMutation = api.editor.storage.uploadFile.useMutation();
+const deleteImageMutation = api.editor.storage.deleteFile.useMutation();
 
 
 
@@ -427,7 +427,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           Seçin...
         </option>
         { categoryData?.map((category) => (
-          <option key={category?.id} value={category?.name}>
+          <option key={category?.id} value={category?.urlName}>
             {category?.name}
           </option>
         ))}

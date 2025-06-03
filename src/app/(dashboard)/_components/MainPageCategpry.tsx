@@ -14,9 +14,11 @@ const MainPageCategpry = async ({ category }: { category: string }) => {
     <div className="w-full flex flex-col gap-5">
       <p className="text-2xl text-titleText pl-2">{category}</p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:grid-cols-3">
-        {article.articles.map((item) => (
-          <NewsCard article={item} key={item.id} />
-        ))}
+        {article.articles
+          .filter((item) => item.categorie !== null)
+          .map((item) => (
+            <NewsCard article={item as Omit<typeof item, 'categorie'> & { categorie: { name: string; urlName: string } }} key={item.id} />
+          ))}
       </div>
     </div>
   );

@@ -5,148 +5,10 @@ import slugify from 'slugify';
 import { v4 as uuidv4 } from "uuid";
 import { ArticleStatus } from "@prisma/client";
 import redis from "~/server/redisClient";
-export const newsRouter = createTRPCRouter({
+import { ad } from "node_modules/better-auth/dist/shared/better-auth.purQujiV";
+export const adminArticleRouter = createTRPCRouter({
 
-  create: editoreProcedure
-    .input(z.object({
-      title: z.string().min(1, "Başlıq gereklidir"),
-      content: z.string().min(1, "Content gereklidir"),
-      category: z.string().min(1, "Kategory gereklidir"),
-      description:z.string().min(10,"Aciqlama gereklidir "),
-      imagesUrl:z.array(z.string()).optional(),
-      tags:z.array(z.string()).optional()
-    }))
-    .mutation(async ({ ctx, input }) => {
-      const slugText = slugify(input.title, {
-        lower: true,  
-        strict: true, 
-      });
-      const uniqueId = uuidv4();
-      const slug = slugText+uniqueId
-      
-      
-      try {
-        const article = await ctx.db.article.create({
-          data: {
-            title: input.title,
-            slug,
-            authorId:ctx.auth.user.id,
-            content: input.content,
-            category: input.category,
-            status: "DRAFT", 
-            description:input.description,
-            imageUrl: input.imagesUrl ??[],
-             tags:{
-              connect: input?.tags?.map((tag) => ({ name: tag })) ?? []
-             }
-          },
-        });
-        return article;
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error("Makale oluşturulurken hata oluştu: " + error.message);
-        } else {
-          throw new Error("Makale oluşturulurken bilinmeyen bir hata oluştu");
-        }
-      }
-    }),
-
-
-    update: editoreProcedure
-  .input(z.object({
-    id: z.string().min(1, "ID gereklidir"),
-    title: z.string().min(1, "Başlıq gereklidir").optional(),
-    content: z.string().min(1, "Content gereklidir").optional(),
-    category: z.string().min(1, "Kategory gereklidir").optional(),
-    description: z.string().min(10, "Açıqlama gereklidir").optional(),
-    imagesUrl: z.array(z.string()).optional(),
-    tags: z.array(z.string()).optional(),
-    status: z.enum(["DRAFT", "PUBLISHED"]).optional()
-  }))
-  .mutation(async ({ ctx, input }) => {
-    try {
-      // First get the existing article to check ownership
-      const existingArticle = await ctx.db.article.findUnique({
-        where: { id: input.id },
-        include: { tags: true }
-      });
-
-      if (!existingArticle) {
-        throw new Error("Makale bulunamadı");
-      }
-
-      // Check if the user is the author
-      if (existingArticle.authorId !== ctx.auth.user.id) {
-        throw new Error("Bu makaleyi güncelleme yetkiniz yok");
-      }
-
-      // Prepare data for update
-      const updateData: Partial<{
-        title: string;
-        content: string;
-        category: string;
-        description: string;
-        imageUrl: string[];
-        status: ArticleStatus;
-        slug: string;
-        tags: { connect: { name: string }[] };
-      }> = {
-        title: input.title,
-        content: input.content,
-        category: input.category,
-        description: input.description,
-        imageUrl: input.imagesUrl,
-        status: input.status
-      };
-
-      // Only update slug if title changed
-      if (input.title && input.title !== existingArticle.title) {
-        const slugText = slugify(input.title, {
-          lower: true,
-          strict: true,
-        });
-        const uniqueId = uuidv4();
-        updateData.slug = slugText + uniqueId;
-      }
-
-      // Handle tags update
-      if (input.tags) {
-        // First disconnect all existing tags
-        await ctx.db.article.update({
-          where: { id: input.id },
-          data: {
-            tags: {
-              set: []
-            }
-          }
-        });
-
-        // Then connect the new tags
-        updateData.tags = {
-          connect: input.tags.map((tag) => ({ name: tag }))
-        };
-      }
-
-      const updatedArticle = await ctx.db.article.update({
-        where: { id: input.id },
-        data: updateData,
-        include: {
-          tags: true
-        }
-      });
-
-      return updatedArticle;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error("Makale güncellenirken hata oluştu: " + error.message);
-      } else {
-        throw new Error("Makale güncellenirken bilinmeyen bir hata oluştu");
-      }
-    }
-  }),
-
-
-        getById: protectedProcedure
+   getById: adminProcedure
           .input(z.object({
             slug: z.string(),
           }))
@@ -196,9 +58,8 @@ export const newsRouter = createTRPCRouter({
               }
             }
           }),
-  newsListAdmin: protectedProcedure  
+  newsListAdmin: adminProcedure  
     .input(z.object({
-      authorId: z.string().optional(),
       status: z.nativeEnum(ArticleStatus),
       page: z.number().min(1), 
       limit: z.number().min(1).max(50)
@@ -208,7 +69,7 @@ export const newsRouter = createTRPCRouter({
       const skip = (page - 1) * limit; 
       try {
         const article = await ctx.db.article.findMany({
-          where: {  status:status , authorId: input.authorId }, 
+          where: {  status:status , }, 
           skip,
           take: limit,
           orderBy: {
@@ -216,7 +77,7 @@ export const newsRouter = createTRPCRouter({
           },
         });
       const count = await ctx.db.article.count({
-        where:{status:status, authorId: input.authorId}
+        where:{status:status,}
       })
         if (!article) {
           throw new Error("Makale bulunamadı");
@@ -295,8 +156,57 @@ export const newsRouter = createTRPCRouter({
       }
     }),
 
+   createCategory: adminProcedure
+  .input(z.object({
+    category: z.string().min(2, "Minimum 2 hərf olmalıdır"),
+  }))
+  .mutation(async ({ ctx, input }) => {
+    try {
+      const rawCategory = input.category.toLowerCase().trim();
 
-  getAllCategory:editoreProcedure
+      // Zaten var mı kontrolü
+      const exsistCategory = await ctx.db.category.findUnique({
+        where: {
+          name: rawCategory,
+        },
+      });
+
+      if (exsistCategory) {
+        throw new Error("Məlumat zatən mövcuddur.");
+      }
+
+      // normalize kelimeleri tek tek ve tre ile birleştir
+      const normalizeCategoryValue = rawCategory
+        .split(" ")
+        .map((word) =>
+          word
+            .replace(/ı/g, "i")
+            .replace(/ə/g, "e")
+            .replace(/ü/g, "u")
+            .replace(/ç/g, "c")
+            .replace(/ş/g, "s")
+            .replace(/ğ/g, "g")
+        )
+        .join("-");
+
+      const newCategory = await ctx.db.category.create({
+        data: {
+          name: rawCategory,
+          urlName: normalizeCategoryValue,
+        },
+      });
+
+      return newCategory;
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error("Category yaradılarkən xəta baş verdi. " + error.message);
+      } else {
+        throw new Error("Category yaradılarkən bilinməyən bir xəta baş verdi.");
+      }
+    }
+  }),
+
+  getAllCategory: adminProcedure
   .query(async({ctx})=>{
     try {
      

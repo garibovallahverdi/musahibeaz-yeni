@@ -22,6 +22,12 @@ export const articleRouter = createTRPCRouter({
               imageUrl: true,
               slug: true,
               publishedAt: true,
+               categorie: {
+                select: {
+                  name: true,
+                  urlName: true,
+                },
+              },
             },
             orderBy: {
               publishedAt: 'desc',
@@ -64,6 +70,12 @@ export const articleRouter = createTRPCRouter({
               description: true,
               category: true,
               imageUrl: true,
+              categorie: {
+                select: {
+                  name: true,
+                  urlName: true,
+                },
+              },
               slug: true,
               publishedAt: true,
             },
@@ -188,11 +200,17 @@ export const articleRouter = createTRPCRouter({
             imageUrl: true,
             slug: true,
             publishedAt: true,
+            categorie: {
+              select: {
+                name: true,
+                urlName: true,
+              },
+            },
           },
           orderBy: {
             createdAt: 'desc',  
           },
-          take:6
+          take: 6
         });
   
         return news; 
@@ -242,96 +260,96 @@ export const articleRouter = createTRPCRouter({
   }),
 
 
-  search : publicProcedure
-  .input(
-    z.object({
-      limit: z.number().min(1).max(100).default(10),
-      cursor: z.string().nullish(),
-      search: z.string().optional(),
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    try {
-      // Generate unique cache key
-      const cacheKey = `search:${input.search ?? 'all'}:${input.cursor ?? 0}:${input.limit}`;
+  // search : publicProcedure
+  // .input(
+  //   z.object({
+  //     limit: z.number().min(1).max(100).default(10),
+  //     cursor: z.string().nullish(),
+  //     search: z.string().optional(),
+  //   })
+  // )
+  // .query(async ({ ctx, input }) => {
+  //   try {
+  //     // Generate unique cache key
+  //     const cacheKey = `search:${input.search ?? 'all'}:${input.cursor ?? 0}:${input.limit}`;
       
-      // Check Redis cache first
-      const cachedResult = await redis.get(cacheKey);
-      if (cachedResult) {
-        return JSON.parse(cachedResult) as { articles: any[], nextCursor: string | null, searchTerm: string | undefined, cached: boolean };
-      }
+  //     // Check Redis cache first
+  //     const cachedResult = await redis.get(cacheKey);
+  //     if (cachedResult) {
+  //       return JSON.parse(cachedResult) as { articles: any[], nextCursor: string | null, searchTerm: string | undefined, cached: boolean };
+  //     }
 
-      // Database query conditions
-      const where: Prisma.ArticleWhereInput = input.search
-        ? {
-            OR: [
-              { title: { contains: input.search, mode: 'insensitive' } },
-              { description: { contains: input.search, mode: 'insensitive' } },
-              // For PostgreSQL full-text search (uncomment if using PostgreSQL):
-              // {
-              //   $text: {
-              //     $search: input.search,
-              //     $caseSensitive: false,
-              //     $diacriticSensitive: false
-              //   }
-              // }
-            ],
-          }
-        : {};
+  //     // Database query conditions
+  //     const where: Prisma.ArticleWhereInput = input.search
+  //       ? {
+  //           OR: [
+  //             { title: { contains: input.search, mode: 'insensitive' } },
+  //             { description: { contains: input.search, mode: 'insensitive' } },
+  //             // For PostgreSQL full-text search (uncomment if using PostgreSQL):
+  //             // {
+  //             //   $text: {
+  //             //     $search: input.search,
+  //             //     $caseSensitive: false,
+  //             //     $diacriticSensitive: false
+  //             //   }
+  //             // }
+  //           ],
+  //         }
+  //       : {};
 
-      // Execute query with cursor pagination
-      const articles = await ctx.db.article.findMany({
-        where,
-        take: input.limit + 1, // Fetch one extra to check for next page
-        cursor: input.cursor ? { id: input.cursor } : undefined,
-        orderBy: { publishedAt: 'desc' }, // Or your preferred ordering
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          publishedAt: true,
-          category: true,
-          imageUrl: true,
-          slug: true,
-          // Only select fields you need
-        },
-      });
+  //     // Execute query with cursor pagination
+  //     const articles = await ctx.db.article.findMany({
+  //       where,
+  //       take: input.limit + 1, // Fetch one extra to check for next page
+  //       cursor: input.cursor ? { id: input.cursor } : undefined,
+  //       orderBy: { publishedAt: 'desc' }, // Or your preferred ordering
+  //       select: {
+  //         id: true,
+  //         title: true,
+  //         description: true,
+  //         publishedAt: true,
+  //         category: true,
+  //         imageUrl: true,
+  //         slug: true,
+  //         // Only select fields you need
+  //       },
+  //     });
 
-      // Determine next cursor
-      let nextCursor: string | undefined = undefined;
-      if (articles.length > input.limit) {
-        const nextItem = articles.pop();
-        nextCursor = nextItem?.id;
-      }
+  //     // Determine next cursor
+  //     let nextCursor: string | undefined = undefined;
+  //     if (articles.length > input.limit) {
+  //       const nextItem = articles.pop();
+  //       nextCursor = nextItem?.id;
+  //     }
 
-      // Prepare response
-      const result = {
-        articles,
-        nextCursor,
-        searchTerm: input.search,
-        cached: false,
-      };
+  //     // Prepare response
+  //     const result = {
+  //       articles,
+  //       nextCursor,
+  //       searchTerm: input.search,
+  //       cached: false,
+  //     };
 
-      // Cache results in Redis (60 seconds TTL)
-      await redis.setex(cacheKey, 60, JSON.stringify({
-        ...result,
-        cached: true
-      }));
+  //     // Cache results in Redis (60 seconds TTL)
+  //     await redis.setex(cacheKey, 60, JSON.stringify({
+  //       ...result,
+  //       cached: true
+  //     }));
 
-      return {
-        articles,
-        nextCursor,
-        searchTerm: input.search,
-        cached: false,
-      };
-    } catch (error) {
-      console.error('Search error:', error);
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Search operation failed',
-      });
-    }
-  }),
+  //     return {
+  //       articles,
+  //       nextCursor,
+  //       searchTerm: input.search,
+  //       cached: false,
+  //     };
+  //   } catch (error) {
+  //     console.error('Search error:', error);
+  //     throw new TRPCError({
+  //       code: 'INTERNAL_SERVER_ERROR',
+  //       message: 'Search operation failed',
+  //     });
+  //   }
+  // }),
 
 
   

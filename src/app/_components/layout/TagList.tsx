@@ -12,23 +12,32 @@ type Tag = {
 export default function TagsList({tag}:{tag:Tag[]}) {
   const [sortedTags, setSortedTags] = useState<Tag[]>([]);
 
+
   useEffect(() => {
     setSortedTags([...tag].sort()); // Alfabetik sıralama
   }, []);
 
+    const allTags = [
+   
+    ...(sortedTags?.map((c) => ({
+      href: `/tag/${c?.tagValue}`,
+      label: c?.name
+    })) ?? []),
+  ];
+
   return (
     <div className=" p-4 rounded-lg w-full  overflow-x-scroll">
       <div className="flex   gap-2">
-        {tag?.map((tag) => (
+        {allTags?.map((tag) => (
           <Link
-            key={tag?.id}
+            key={tag?.href}
             rel="preconnect"
             prefetch={false}
-            href={`/tag/${tag?.name}`}
+            href={tag?.href}
             // href={`/etiket/${tag.toLowerCase()}`}
             className="px-3 py-1 border min-w-max    text-sm rounded-xl text-titleText transition"
           >
-            {tag?.name}
+            {tag?.label}
           </Link>
         ))}
       </div>

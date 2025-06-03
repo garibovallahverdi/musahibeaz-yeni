@@ -1,13 +1,13 @@
 // src/server/api/routers/storage.ts
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc"; // Adjust path as needed
+import { createTRPCRouter, editoreProcedure, publicProcedure } from "~/server/api/trpc"; // Adjust path as needed
 import { createSupabaseServiceRoleClient } from "~/server/supabase"; // Adjust path as needed
 import { TRPCError } from "@trpc/server";
 import { v4 as uuidv4 } from 'uuid';
 const SUPABASE_STORAGE_URL = "https://qptyvfmlusdnrrofcqkx.supabase.co/storage/v1/object/public";
 const SUPABASE_BUCKET_NAME = "musahibe"; // Adjust as needed
 export const storageRouter = createTRPCRouter({
-  uploadFile: publicProcedure // Consider adding .middleware(isAdmin) or .middleware(isEditor) for auth
+  uploadFile: editoreProcedure // Consider adding .middleware(isAdmin) or .middleware(isEditor) for auth
     .input(
       z.object({
         base64File: z.string(), // Base64 encoded string of the file
@@ -58,7 +58,7 @@ export const storageRouter = createTRPCRouter({
       return { url: publicUrl };
     }),
 
-  deleteFile: publicProcedure // Consider adding .middleware(isAdmin) or .middleware(isEditor) for auth
+  deleteFile: editoreProcedure // Consider adding .middleware(isAdmin) or .middleware(isEditor) for auth
     .input(z.object({ fileUrl: z.string().url() }))
     .mutation(async ({ input }) => {
       const supabase = createSupabaseServiceRoleClient();
