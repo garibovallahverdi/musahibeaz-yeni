@@ -10,8 +10,6 @@ const DynamicEditor = dynamic(
 )
 const Update =() => { 
     const params = useParams(); // params burada alınır
-    const slug = params.slug as string;
-    // const { data, isLoading, isError } = api.admin.news.getById.useQuery({ slug: slug });
 
   return (
     <div className='w-full min-h-screen bg-background'>

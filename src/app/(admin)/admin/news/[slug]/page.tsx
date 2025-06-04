@@ -14,7 +14,7 @@ const NewsDetail =   () => {
       const user =  useUser()
     
 
-  const { data, isLoading, isError, refetch } = api.admin.article.getById.useQuery({slug:slug},    
+  const { data, isLoading, isError, refetch } = api.editor.article.getById.useQuery({slug:slug},    
     {
       // Only fetch if slug is available
       enabled: !!slug,

@@ -6,10 +6,6 @@ import Image from "next/image";
 import { FiSun, FiMoon, FiSearch, FiX, FiMenu } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { useTheme } from "~/app/providers/ThemeProvider";
-import TagsList from "./TagList";
-import SearchInput from "../common/SearchInput";
-import { useSelectedCategory } from "~/app/providers/CategoryProvider";
-// import { useCategories } from "~/app/providers/CategoryProvider";
 
 type Category = {
   id: string;
@@ -61,21 +57,20 @@ export default function Navbar({ category }: { category: Category[] }) {
       {/* Mobil Menü */}
       {mobileMenu && (
         <div className="fixed inset-0 z-[999] bg-background dark:bg-gray-900 flex flex-col p-8">
-          <div className="flex justify-between items-center mb-6">
-            <span className="text-xl font-bold text-gray-900 dark:text-white">Menü</span>
+          <div className="flex justify-end items-center mb-6">
             <MdOutlineCancel
               onClick={() => setIsMobileMenu(false)}
-              className="text-3xl cursor-pointer text-gray-900 dark:text-white hover:text-blue-600 transition-all"
+              className="text-3xl cursor-pointer text-titleText hover:text-blue-600 transition-all"
             />
           </div>
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col justify-center items-center space-y-4">
             {allRoutes.map((route, idx) => (
               <Link
                 key={idx}
                 href={route.href}
                 prefetch={false}
                 onClick={() => setIsMobileMenu(false)}
-                className="text-lg font-semibold uppercase text-gray-900 dark:text-white hover:text-blue-600 truncate"
+                className="text-lg font-semibold uppercase text-titleText hover:text-blue-600 truncate"
               >
                 {route.label}
               </Link>

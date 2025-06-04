@@ -46,8 +46,8 @@ const Home = async () => {
 
       {/* Kategoriler İçin Dinamik Veri */}
       <div className="flex flex-col gap-6">
-        <MainPageCategpry category="idman" />
         <MainPageCategpry category="siyaset" />
+        <MainPageCategpry category="idman" />
         {/* <MainPageCategpry category="Elm və Texnologiya" /> */}
         {/* <MainPageCategpry category="Mədəniyyət" /> */}
       </div>

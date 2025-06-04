@@ -116,9 +116,9 @@ const NewsContainerByCategory = ({
   return (
     <div className="flex flex-col gap-6">
       <p className="pl-2 text-2xl text-titleText uppercase">{categoryData?.name}</p>
-      <div className="flex gap-3">
+      <div className="flex gap-3 overflow-x-auto scrollbar-hide text-nowrap">
     {
-          categoryData?.tags && categoryData.tags.length > 0 ? (
+          (categoryData?.tags && categoryData.tags.length > 0) && (
             categoryData.tags.map((tag) => (
               <Link
                 key={tag.id}
@@ -128,9 +128,7 @@ const NewsContainerByCategory = ({
                 {tag.name}
               </Link>
             ))
-          ) : (
-            <span className="text-sm text-gray-500">Bu kateqoriyada tag yoxdur</span>
-          )}
+          ) }
        
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">

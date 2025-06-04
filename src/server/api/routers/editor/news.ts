@@ -83,6 +83,12 @@ export const editorArticleRouter = createTRPCRouter({
         throw new Error("Bu makaleyi güncelleme yetkiniz yok");
       }
 
+      const categories = await ctx.db.category.findFirst({
+        where: { urlName: input.category },
+      });
+      if (!categories) {
+        throw new Error("Belirtilen kategori bulunamadı");
+      }
       // Prepare data for update
       const updateData: Partial<{
         title: string;
@@ -90,6 +96,7 @@ export const editorArticleRouter = createTRPCRouter({
         category: string;
         description: string;
         imageUrl: string[];
+        categoryId: string;
         status: ArticleStatus;
         slug: string;
         tags: { connect: { name: string }[] };
@@ -97,6 +104,7 @@ export const editorArticleRouter = createTRPCRouter({
         title: input.title,
         content: input.content,
         category: input.category,
+        categoryId: categories.id,
         description: input.description,
         imageUrl: input.imagesUrl,
         status: input.status
