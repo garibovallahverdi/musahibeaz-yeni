@@ -8,6 +8,7 @@ import { Article } from '@prisma/client';
 import * as cheerio from "cheerio";
 import Image from 'next/image';
 import Link from 'next/link';
+import ImageGallery from '../news/[category]/[slug]/_components/ImageGallery';
 
 type News =  {
   id: string;
@@ -17,6 +18,7 @@ type News =  {
   slug: string;
   imageUrl: string[] | null;
   publishedAt: Date | null;
+  galleryImages: string[] | null;
   category: string;
   tags: { name: string }[]; 
 };
@@ -29,6 +31,8 @@ const ShowDetail = ({ news }: { news: News  }) => {
   const increaseFontSize = () => setBaseFontSize((prev) => Math.min(prev + 2, 30));
   const decreaseFontSize = () => setBaseFontSize((prev) => Math.max(prev - 2, 12));
 
+  console.log(news, "news here");
+  
   useEffect(() => {
     const content = document.querySelector(".news-detail-content");
     if (content) {
@@ -141,6 +145,8 @@ const ShowDetail = ({ news }: { news: News  }) => {
   ))}
 </span>
 
+
+
       </div>
         
       {/* Modal */}
@@ -159,6 +165,12 @@ const ShowDetail = ({ news }: { news: News  }) => {
           />
         </div>
       )}
+       {
+  news.galleryImages && (
+
+    <ImageGallery images={news.galleryImages}/>
+  )
+ }
     </div>
   );
 };

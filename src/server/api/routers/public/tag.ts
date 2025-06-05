@@ -194,23 +194,40 @@ export const tagPublicRouter = createTRPCRouter({
         }
       }),
 
-    getCategory: publicProcedure
+ getCategory: publicProcedure
     .query(async ({ ctx }) => {
       try {
         const categories = await ctx.db.category.findMany();
 
-        // Kategorilerin her biri için makale sayısını kontrol et
+        // Uncomment and adjust this section if you still need to filter based on article count
+        // For example, if you only want to return main categories that have at least one article
+        // directly linked OR if any of their subcategories have an article.
+        // This logic can become complex quickly depending on exact requirements.
         // const filteredCategories = await Promise.all(
         //   categories.map(async (category) => {
-        //     const articleCount = await ctx.db.article.count({
-        //       where: { category: category.name } 
+        //     // Count articles for the main category
+        //     const mainCategoryArticleCount = await ctx.db.article.count({
+        //       where: { categoryId: category.id }
         //     });
-        //     return articleCount > 0 ? category : null; 
+
+        //     // Count articles for all direct subcategories
+        //     const subCategoryArticleCounts = await Promise.all(
+        //       category.children.map(async (subCategory) => {
+        //         return await ctx.db.article.count({
+        //           where: { categoryId: subCategory.id }
+        //         });
+        //       })
+        //     );
+
+        //     const totalArticleCount = mainCategoryArticleCount + subCategoryArticleCounts.reduce((acc, count) => acc + count, 0);
+
+        //     return totalArticleCount > 0 ? category : null;
         //   })
         // );
 
-        return categories
+        // return filteredCategories.filter(Boolean); // Filter out nulls
 
+        return categories; // Return all main categories with their children
       } catch (error) {
         if (error instanceof Error) {
           throw new Error("Kategoriler getirilirken hata oluştu: " + error.message);
@@ -218,5 +235,5 @@ export const tagPublicRouter = createTRPCRouter({
           throw new Error("Kategoriler getirilirken bilinmeyen bir hata oluştu");
         }
       }
-    })
+    }),
 });

@@ -7,13 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 const SUPABASE_STORAGE_URL = "https://qptyvfmlusdnrrofcqkx.supabase.co/storage/v1/object/public";
 const SUPABASE_BUCKET_NAME = "musahibe"; // Adjust as needed
 export const storageRouter = createTRPCRouter({
-  uploadFile: editoreProcedure // Consider adding .middleware(isAdmin) or .middleware(isEditor) for auth
+ uploadFile: editoreProcedure
     .input(
       z.object({
-        base64File: z.string(), // Base64 encoded string of the file
-        fileName: z.string().optional(), // Original file name (for extension/alt text)
-        fileType: z.string(), // Mime type (e.g., "image/jpeg")
-        folder: z.string().optional().default("articles"), // Folder in the bucket
+        base64File: z.string(),
+        fileName: z.string().optional(),
+        fileType: z.string(),
+        folder: z.string().optional().default("articles"),
       })
     )
     .mutation(async ({ input }) => {
@@ -30,13 +30,11 @@ export const storageRouter = createTRPCRouter({
 
       const { base64File, fileName, fileType, folder } = input;
 
-      console.log("base64File:", base64File);   
-      // Extract raw base64 string (remove data:image/png;base64, prefix)
       const base64Data = base64File.replace(/^data:[a-z]+\/[a-z]+;base64,/, "");
       const fileBuffer = Buffer.from(base64Data, 'base64');
 
       const fileExtension = fileName ? fileName.split('.').pop() : fileType.split('/').pop();
-      const newFileName = `${folder}/${uuidv4()}.${fileExtension}`;
+      const newFileName = `${folder}/${uuidv4()}.${fileExtension}`; // Dosya adını benzersiz yapın
 
       const { data, error } = await supabase.storage
         .from(bucketName)
@@ -57,6 +55,67 @@ export const storageRouter = createTRPCRouter({
       const publicUrl = `${storageUrl}/${bucketName}/${newFileName}`;
       return { url: publicUrl };
     }),
+
+
+    deleteFile2: editoreProcedure
+    .input(z.object({ fileUrl: z.string().url("Geçerli bir URL girin.") })) // Sileceğimiz görselin URL'si
+    .mutation(async ({ input }) => {
+      const supabase = createSupabaseServiceRoleClient();
+      const bucketName = SUPABASE_BUCKET_NAME; // Ortam değişkeninizden Supabase Bucket adını alın
+
+      if (!bucketName) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Supabase bucket adı ortam değişkeni yapılandırılmamış.",
+        });
+      }
+
+      const { fileUrl } = input;
+
+      // URL'den dosya yolunu çıkarın
+      // Örnek URL yapısı: https://[your-project-ref].supabase.co/storage/v1/object/public/[your-bucket-name]/[folder]/[file_name.jpg]
+      // Bu nedenle, bucket adından sonraki kısmı almamız gerekiyor.
+      const urlParts = fileUrl.split(`/${bucketName}/`);
+      if (urlParts.length < 2) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Geçersiz dosya URL'si formatı. URL bucket adını içermiyor olabilir.",
+        });
+      }
+      const filePath = urlParts[1]; // Bucket adından sonraki kısım bizim dosya yolumuz
+
+      if (!filePath) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Dosya yolu URL'den çıkarılamadı.",
+        });
+      }
+
+      try {
+        const { error } = await supabase.storage
+          .from(bucketName)
+          .remove([filePath]); // remove metodu bir dizi string alır
+
+        if (error) {
+          console.error("Supabase delete error:", error);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Dosya silinirken hata oluştu: ${error.message}`,
+          });
+        }
+        return { success: true, message: "Dosya başarıyla silindi." };
+      } catch (error) {
+        console.error("Supabase delete operation failed:", error);
+        if (error instanceof TRPCError) {
+            throw error; // Zaten bir TRPCError ise direkt fırlat
+        }
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Görsel silme işleminde beklenmeyen bir hata oluştu: ${(error as Error).message}`,
+        });
+      }
+    }),
+
 
   deleteFile: editoreProcedure // Consider adding .middleware(isAdmin) or .middleware(isEditor) for auth
     .input(z.object({ fileUrl: z.string().url() }))

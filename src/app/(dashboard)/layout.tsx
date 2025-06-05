@@ -9,11 +9,15 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   let categoryData = await api.public.tag.getCategory();
   // let tagData = await api.public.tag.listTag();
 
-  // categoryData = categoryData.filter(Boolean);
+  // Ensure each category has a children property
+  const normalizedCategoryData = categoryData.map((cat: any) => ({
+    ...cat,
+    children: cat.children ?? [],
+  }));
 
   return (
     <div className='bg-background'>
-        <Navbar category={categoryData}  />
+        <Navbar category={normalizedCategoryData}  />
         <div className='container mx-auto py-10 min-h-screen'>
           {children}
         </div>

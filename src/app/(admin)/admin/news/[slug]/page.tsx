@@ -1,5 +1,5 @@
 "use client"
-import { type Article,  ArticleStatus } from "@prisma/client";
+import { ArticleStatus } from "@prisma/client";
 import { useParams } from "next/navigation";
 import { api } from "~/trpc/react";
 import Loading from "../../_components/loading";
@@ -14,21 +14,45 @@ const NewsDetail =   () => {
       const user =  useUser()
     
 
-  const { data, isLoading, isError, refetch } = api.editor.article.getById.useQuery({slug:slug},    
-    {
-      // Only fetch if slug is available
-      enabled: !!slug,
-      // Data will be considered fresh indefinitely.
-      // It will only re-fetch if `refetch()` is called manually.
-      staleTime: Infinity,
-      // Prevent automatic re-fetching on window focus
-      refetchOnWindowFocus: false,
-      // Prevent automatic re-fetching on component mount (after initial fetch)
-      refetchOnMount: false,
-      // Prevent automatic re-fetching on network reconnect
-      refetchOnReconnect: false,
-    }
-);
+
+const { data, isLoading, isError, refetch } = 
+  user.session && user.session.user.role === "admin"
+    ? api.admin.article.getById.useQuery(
+        { slug },
+        {
+          enabled: !!slug,
+          staleTime: Infinity,
+          refetchOnWindowFocus: false,
+          refetchOnMount: false,
+          refetchOnReconnect: false,
+        }
+      )
+    : api.editor.article.getById.useQuery(
+        { slug },
+        {
+          enabled: !!slug,
+          staleTime: Infinity,
+          refetchOnWindowFocus: false,
+          refetchOnMount: false,
+          refetchOnReconnect: false,
+        }
+      );
+
+//   const { data, isLoading, isError, refetch } = api.editor.article.getById.useQuery({slug:slug},   // api.admin 
+//     {
+//       // Only fetch if slug is available
+//       enabled: !!slug,
+//       // Data will be considered fresh indefinitely.
+//       // It will only re-fetch if `refetch()` is called manually.
+//       staleTime: Infinity,
+//       // Prevent automatic re-fetching on window focus
+//       refetchOnWindowFocus: false,
+//       // Prevent automatic re-fetching on component mount (after initial fetch)
+//       refetchOnMount: false,
+//       // Prevent automatic re-fetching on network reconnect
+//       refetchOnReconnect: false,
+//     }
+// );
 
    const { mutate: publishArticle,  isPending } = api.admin.article.publish.useMutation({
     onSuccess: () => {
@@ -75,7 +99,8 @@ const NewsDetail =   () => {
 
         <div className="mt-4 flex gap-2 flex-wrap">
           {
-            data?.tags?.map(tag=>(
+            Array.isArray((data as any)?.tags) &&
+            (data as any).tags.map((tag: { name: string }) => (
               <span key={tag.name} className="px-2 block py-1 border-2 border-border">#{tag.name}</span>
             ))
           }

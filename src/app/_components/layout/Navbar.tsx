@@ -13,7 +13,10 @@ type Category = {
   urlName: string;
   createdAt: Date;
   updatedAt: Date;
-} | null;
+  parentId: string | null;
+  children: Category[]; // Recursive type for nested children
+};
+
 
 type Tag = {
   id: string;
@@ -48,6 +51,8 @@ export default function Navbar({ category }: { category: Category[] }) {
   ];
 
 
+  console.log(category, "categorrryy");
+  
 
   const mainLinks = allRoutes.slice(0, 5);
   const moreLinks = allRoutes.slice(5);
@@ -122,7 +127,7 @@ export default function Navbar({ category }: { category: Category[] }) {
                           <Link
                             href={link.href}
                             prefetch={false}
-                            className="block text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 truncate"
+                            className="block uppercase text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 truncate"
                           >
                             {link.label}
                           </Link>

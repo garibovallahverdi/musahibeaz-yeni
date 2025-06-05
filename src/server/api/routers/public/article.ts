@@ -119,14 +119,14 @@ export const articleRouter = createTRPCRouter({
       }))
       .query(async ({ ctx, input }) => {
         try {
-          const cacheKey = `article:${input.slug}`;
+          // const cacheKey = `article:${input.slug}`;
     
-          // ✅ 1. Önce Redis Cache'den kontrol et
-          const cachedArticle = await redis.get(cacheKey);
-          if (cachedArticle) {
-            console.log("♻️ Cache'den çekildi:", cacheKey);
-            return JSON.parse(cachedArticle) as Article & { tags: { name: string }[] };
-          }
+          // // ✅ 1. Önce Redis Cache'den kontrol et
+          // const cachedArticle = await redis.get(cacheKey);
+          // if (cachedArticle) {
+          //   console.log("♻️ Cache'den çekildi:", cacheKey);
+          //   return JSON.parse(cachedArticle) as Article & { tags: { name: string }[] };
+          // }
     
           // 🚀 2. Cache'de yoksa veritabanından çek
           const article = await ctx.db.article.findUnique({
@@ -138,6 +138,7 @@ export const articleRouter = createTRPCRouter({
               content: true,
               category: true,
               imageUrl: true,
+              galleryImages:true,
               slug: true,
               publishedAt: true,
               tags: {
@@ -152,8 +153,8 @@ export const articleRouter = createTRPCRouter({
             throw new Error("Makale bulunamadı");
           }
     
-          await redis.set(cacheKey, JSON.stringify(article), "EX", 600);
-          console.log("📌 Cache'e eklendi:", cacheKey);
+          // await redis.set(cacheKey, JSON.stringify(article), "EX", 600);
+          // console.log("📌 Cache'e eklendi:", cacheKey);
     
           return article;
         } catch (error) {

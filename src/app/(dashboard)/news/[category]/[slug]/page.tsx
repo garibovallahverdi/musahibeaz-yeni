@@ -32,6 +32,7 @@ export default async function Page(props: { params: Params }) {
   const news = await api.public.article.getById({ slug });
     const initialData2 = await api.public.article.getStepNews({ limit: 8, page: 1 });
   
+    
   return (
     <div className="w-full max-w-7xl mx-auto py-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">

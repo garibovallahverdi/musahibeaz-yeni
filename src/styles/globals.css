@@ -356,3 +356,59 @@ body {
   }
 }
 
+
+
+/* news gallery slider css*/
+
+/* styles/ImageGallery.module.css */
+.galleryContainer {
+    width: 90%;
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.noImages {
+    text-align: center;
+    color: #666;
+    font-size: 1.1em;
+    padding: 20px;
+}
+
+.thumbnailGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Daha küçük ekranlar için ayar */
+    gap: 15px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.thumbnailItem {
+    cursor: pointer;
+    border: 3px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    position: relative; /* Image bileşeni için */
+    width: 100%;
+    height: 120px; /* Sabit yükseklik, Next/image layout="responsive" ile iyi çalışır */
+}
+
+.thumbnailItem:hover {
+    border-color: #007bff;
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 123, 255, 0.2);
+}
+
+.thumbnailImage {
+    /* Next/image için otomatik olarak boyutlandırılacak, bu stiller eklemeyin */
+    border-radius: 5px; /* Sadece küçük resimlere */
+}
+
+
+
+
+

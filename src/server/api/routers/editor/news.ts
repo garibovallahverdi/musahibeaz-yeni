@@ -5,29 +5,40 @@ import slugify from 'slugify';
 import { v4 as uuidv4 } from "uuid";
 import { ArticleStatus } from "@prisma/client";
 import redis from "~/server/redisClient";
+import { TRPCError } from "@trpc/server";
 export const editorArticleRouter = createTRPCRouter({
 
-  create: editoreProcedure
+create: editoreProcedure
     .input(z.object({
       title: z.string().min(1, "Başlıq gereklidir"),
       content: z.string().min(1, "Content gereklidir"),
       category: z.string().min(1, "Kategory gereklidir"),
-      description:z.string().min(10,"Aciqlama gereklidir "),
-      imagesUrl:z.array(z.string()).optional(),
-      tags:z.array(z.string()).optional(),
+      description: z.string().min(10, "Aciqlama gereklidir "),
+      imagesUrl: z.array(z.string()).optional(), // Ana içerik görselleri
+      galleryImages: z.array(z.string()).optional(), // Galeri görselleri
+      tags: z.array(z.string()).optional(),
+      multimedia: z.boolean().optional().default(false), // <-- YENİ EKLENDİ: multimedia alanı
     }))
     .mutation(async ({ ctx, input }) => {
       const slugText = slugify(input.title, {
-        lower: true,  
-        strict: true, 
+        lower: true,
+        strict: true,
       });
       const uniqueId = uuidv4();
-      const slug = slugText + uniqueId;
+      const slug = slugText + "-" + uniqueId; // Slug'ı benzersiz hale getirin
 
       try {
         const categories = await ctx.db.category.findFirst({
           where: { urlName: input.category },
         });
+
+        if (!categories) {
+            throw new TRPCError({
+                code: "BAD_REQUEST",
+                message: "Seçilen kategori bulunamadı."
+            });
+        }
+
         const article = await ctx.db.article.create({
           data: {
             title: input.title,
@@ -35,21 +46,35 @@ export const editorArticleRouter = createTRPCRouter({
             authorId: ctx.auth.user.id,
             content: input.content,
             category: input.category,
-            status: "DRAFT",
+            status: "DRAFT", // Or whatever default status you want
             description: input.description,
-            categoryId: categories?.id ?? "",
+            categoryId: categories.id,
             imageUrl: input.imagesUrl ?? [],
+            galleryImages: input.galleryImages ?? [],
+            multimedia: input.multimedia, // <-- YENİ EKLENDİ: multimedia değerini ata
             tags: {
               connect: input?.tags?.map((tag) => ({ name: tag })) ?? []
-             }
+            }
           },
         });
         return article;
       } catch (error) {
-        if (error instanceof Error) {
-          throw new Error("Makale oluşturulurken hata oluştu: " + error.message);
+        if (error instanceof TRPCError) {
+            throw error; // TRPCError'ları doğrudan fırlat
+        } else if (error instanceof Error) {
+            console.error("Makale oluşturulurken hata:", error);
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Makale oluşturulurken bir hata oluştu: " + error.message,
+                cause: error
+            });
         } else {
-          throw new Error("Makale oluşturulurken bilinmeyen bir hata oluştu");
+            console.error("Makale oluşturulurken bilinmeyen bir hata:", error);
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Makale oluşturulurken bilinmeyen bir hata oluştu",
+                cause: error
+            });
         }
       }
     }),
@@ -174,6 +199,8 @@ export const editorArticleRouter = createTRPCRouter({
                   imageUrl: true,
                   slug: true,
                   publishedAt: true,
+                  galleryImages:true,
+                  multimedia:true,
                   status: true,
                   createdAt: true,
                   updatedAt: true,

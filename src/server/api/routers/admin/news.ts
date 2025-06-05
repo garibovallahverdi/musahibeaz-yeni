@@ -156,54 +156,53 @@ export const adminArticleRouter = createTRPCRouter({
       }
     }),
 
-   createCategory: adminProcedure
-  .input(z.object({
-    category: z.string().min(2, "Minimum 2 hərf olmalıdır"),
-  }))
+createCategory: adminProcedure
+  .input(
+    z.object({
+      category: z.string().min(2, "Minimum 2 hərf olmalıdır"),
+      parentId: z.string().uuid().optional(), // Eğer varsa sub-category olur
+    })
+  )
   .mutation(async ({ ctx, input }) => {
-    try {
-      const rawCategory = input.category.toLowerCase().trim();
+    const rawCategory = input.category.toLowerCase().trim();
 
-      // Zaten var mı kontrolü
-      const exsistCategory = await ctx.db.category.findUnique({
-        where: {
-          name: rawCategory,
-        },
-      });
+    // normalize kelimeleri tek tek ve tre ile birleştir
+    const normalizeCategoryValue = rawCategory
+      .split(" ")
+      .map((word) =>
+        word
+          .replace(/ı/g, "i")
+          .replace(/ə/g, "e")
+          .replace(/ü/g, "u")
+          .replace(/ç/g, "c")
+          .replace(/ş/g, "s")
+          .replace(/ğ/g, "g")
+      )
+      .join("-");
 
-      if (exsistCategory) {
-        throw new Error("Məlumat zatən mövcuddur.");
-      }
+    // Aynı isimle kategori var mı?
+    const exists = await ctx.db.category.findUnique({
+      where: { name: rawCategory },
+    });
 
-      // normalize kelimeleri tek tek ve tre ile birleştir
-      const normalizeCategoryValue = rawCategory
-        .split(" ")
-        .map((word) =>
-          word
-            .replace(/ı/g, "i")
-            .replace(/ə/g, "e")
-            .replace(/ü/g, "u")
-            .replace(/ç/g, "c")
-            .replace(/ş/g, "s")
-            .replace(/ğ/g, "g")
-        )
-        .join("-");
+    if (exists) throw new Error("Məlumat zatən mövcuddur.");
 
-      const newCategory = await ctx.db.category.create({
-        data: {
-          name: rawCategory,
-          urlName: normalizeCategoryValue,
-        },
-      });
+    // Yeni kategoriyi oluştur
+    const newCategory = await ctx.db.category.create({
+      data: {
+        name: rawCategory,
+        urlName: normalizeCategoryValue,
+        parentId: input.parentId ?? null, // Main veya Sub kategori
+      },
+    });
 
-      return newCategory;
-    } catch (error) {
-      if (error instanceof Error) {
-        throw new Error("Category yaradılarkən xəta baş verdi. " + error.message);
-      } else {
-        throw new Error("Category yaradılarkən bilinməyən bir xəta baş verdi.");
-      }
-    }
+    return {
+      success: true,
+      message: input.parentId
+        ? "Alt kateqoriya yaradıldı."
+        : "Ana kateqoriya yaradıldı.",
+      category: newCategory,
+    };
   }),
 
   getAllCategory: adminProcedure
@@ -214,7 +213,7 @@ export const adminArticleRouter = createTRPCRouter({
 
       const categories = await ctx.db.category.findMany();
       if (!categories || categories.length === 0) {
-        throw new Error("Kategoriler bulunamadı");
+       return null
       }
       // Kategorileri slugify ile düzenleme
       // categories.forEach(category => {
