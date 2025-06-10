@@ -13,7 +13,7 @@ export const articleRouter = createTRPCRouter({
       .query(async ({ ctx, input }) => {
         try {
           const article = await ctx.db.article.findMany({
-            where: {   },
+            where: { status:ArticleStatus.PUBLISHED  },
             select: {
               id: true,
               title: true,
@@ -130,7 +130,7 @@ export const articleRouter = createTRPCRouter({
     
           // 🚀 2. Cache'de yoksa veritabanından çek
           const article = await ctx.db.article.findUnique({
-            where: { slug: input.slug },
+            where: { slug: input.slug, status:ArticleStatus.PUBLISHED },
             select: {
               id: true,
               title: true,
@@ -241,6 +241,9 @@ export const articleRouter = createTRPCRouter({
         take: limit,
         skip: (page - 1) * limit, // Sayfaya göre kaydırma işlemi
         orderBy: { publishedAt: 'desc' },
+        include:{
+          categorie:true
+        }
       });
 
       const totalCount = await ctx.db.article.count({

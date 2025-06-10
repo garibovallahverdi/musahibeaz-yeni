@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 
 interface Props {
@@ -44,15 +45,17 @@ export default function ImageGallery({ images }: Props) {
       {/* Gallery */}
       <div className='flex flex-col my-5'>
         <h3 className='text-xl font-semibold my-2'>Galerya</h3>
-      <div className="grid gap-2 sm:gap-3 grid-cols-[repeat(auto-fill,minmax(150px,1fr))]  max-h-[50vh] overflow-y-auto">
+      <div className="grid gap-2 sm:gap-3  grid-cols-[repeat(auto-fill,minmax(80px,1fr))]  max-h-[50vh] overflow-x-auto">
         {images.map((src, i) => (
-            <img
+            <Image
             key={i}
             src={src}
             alt={`image-${i}`}
             loading="lazy" // Lazy loading
             onClick={() => openModal(i)}
-            className="w-full h-[150px] object-cover rounded cursor-pointer"
+            width={80}
+            height={80}
+            className="h-[80px] w-full object-cover rounded cursor-pointer"
             />
         ))}
       </div>

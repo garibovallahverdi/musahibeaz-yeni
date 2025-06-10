@@ -122,6 +122,12 @@ const ShowDetail = ({ news }: { news: News  }) => {
           dangerouslySetInnerHTML={{ __html: optimizedContent }}
         />
       </div>
+             {
+  news.galleryImages && (
+
+    <ImageGallery images={news.galleryImages}/>
+  )
+ }
       <div className="flex gap-4 flex-col md:flex-row items-center text-sm text-gray-500">
         <span className="flex items-center gap-2">
           <BsCalendar2 />
@@ -165,12 +171,7 @@ const ShowDetail = ({ news }: { news: News  }) => {
           />
         </div>
       )}
-       {
-  news.galleryImages && (
 
-    <ImageGallery images={news.galleryImages}/>
-  )
- }
     </div>
   );
 };

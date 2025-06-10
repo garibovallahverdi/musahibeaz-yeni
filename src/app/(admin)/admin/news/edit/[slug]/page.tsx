@@ -9,11 +9,10 @@ const DynamicEditor = dynamic(
   { ssr: false }
 )
 const Update =() => { 
-    const params = useParams(); // params burada alınır
 
   return (
     <div className='w-full min-h-screen bg-background'>
-      <DynamicEditor/>
+      <DynamicEditor />
     </div>
   )
 }

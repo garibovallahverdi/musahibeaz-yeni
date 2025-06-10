@@ -88,6 +88,7 @@ create: editoreProcedure
     category: z.string().min(1, "Kategory gereklidir").optional(),
     description: z.string().min(10, "Açıqlama gereklidir").optional(),
     imagesUrl: z.array(z.string()).optional(),
+    galleryImages: z.array(z.string()).optional(), // Galeri görselleri
     tags: z.array(z.string()).optional(),
     status: z.enum(["DRAFT", "PUBLISHED"]).optional()
   }))
@@ -121,6 +122,7 @@ create: editoreProcedure
         category: string;
         description: string;
         imageUrl: string[];
+        galleryImages:string[];
         categoryId: string;
         status: ArticleStatus;
         slug: string;
@@ -132,6 +134,7 @@ create: editoreProcedure
         categoryId: categories.id,
         description: input.description,
         imageUrl: input.imagesUrl,
+        galleryImages:input.galleryImages,
         status: input.status
       };
 
