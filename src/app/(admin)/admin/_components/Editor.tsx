@@ -21,6 +21,7 @@ interface ArticleData {
   category: string;
   tags: string[];
   galleryImages: string[];
+  imagesUrl: string[];
   multimedia: boolean;
 }
 
@@ -342,8 +343,9 @@ const Editor = () => {
         description,
         category: selectedCategory,
         tags: selectedTags,
-        // galleryImages state'i zaten silinmek üzere işaretlenenler hariç,
-        // güncel görselleri içerir.
+        
+       
+        imagesUrl: existingContentImageUrls,
         galleryImages: isMultimedia ? galleryImages : [],
         multimedia: isMultimedia,
       };
