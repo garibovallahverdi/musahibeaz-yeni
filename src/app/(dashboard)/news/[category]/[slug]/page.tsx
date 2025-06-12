@@ -12,15 +12,15 @@ type Params = Promise<{ slug: string, category: string }>;
 export async function generateMetadata(props: { params: Params }): Promise<Metadata> {
   const { slug, category } = await props.params;
   const news = await api.public.article.getById({ slug });
-
+ 
   return {
     title: news?.title || "Xəbər Detayı",
     description: news?.description || "Ən son xəbərləri oxuyun.",
-    alternates: { canonical: `https://musahibe.az/news/${category}/${slug}` },
+    alternates: { canonical: `https://musahibe.az/news/${news.categorie?.urlName}/${news.slug}` },
     openGraph: {
       title: news?.title || "Xəbər Detayı",
       description: news?.description || "Ən son xəbərləri oxuyun.",
-      url: `https://musahibe.az/news/${category}/${slug}`,
+      url: `https://musahibe.az/news/${news.categorie?.urlName}/${news.slug}`,
       images: [{ url: news?.imageUrl[0] ?? "/logo.jpg" }],
       type: "article",
     },
