@@ -20,7 +20,7 @@ export async function generateMetadata(props: { params: Params }): Promise<Metad
     openGraph: {
       title: news?.title || "Xəbər Detayı",
       description: news?.description || "Ən son xəbərləri oxuyun.",
-      url: `https://musahibe.az/news/${news.category}/${news.slug}`,
+      url: `https://musahibe.az/news/${category}/${slug}`,
       images: [{ url: news?.imageUrl[0] ?? "/logo.jpg" }],
       type: "article",
     },
