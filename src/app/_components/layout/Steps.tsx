@@ -78,7 +78,7 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
                   <h2 className="text-xl sm:text-2xl font-bold line-clamp-2">{selectedArticle.title}</h2>
                   <p className="text-xs sm:text-sm line-clamp-3 mt-2">{selectedArticle.description}</p>
                   <Link
-                    href={`/news/${selectedArticle.categorie.urlName}/${selectedArticle.slug}`}
+                    href={`/read/${selectedArticle.categorie.urlName}/${selectedArticle.slug}`}
                     className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition duration-300 text-sm sm:text-base"
                   >
                     Dəvamını Oxu

@@ -82,7 +82,7 @@ const Carousel = ({ data }: { data: Article[] }) => {
                 
                 {/* Başlık - Daha büyük ve daha net */}
                 <h3 className="text-sm sm:text-3xl  font-extrabold leading-tight mb-3 drop-shadow-xl"> {/* Boyutlar ve mb-3 artırıldı */}
-                  <Link href={`/news/${article.categorie.urlName}/${article.slug}`} className="hover:text-gray-100 transition-colors duration-300"> {/* hover:text-gray-100 daha net */}
+                  <Link href={`/read/${article.categorie.urlName}/${article.slug}`} className="hover:text-gray-100 transition-colors duration-300"> {/* hover:text-gray-100 daha net */}
                     {article.title}
                   </Link>
                 </h3>
