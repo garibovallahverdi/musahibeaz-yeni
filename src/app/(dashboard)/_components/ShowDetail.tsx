@@ -4,11 +4,10 @@ import { BsCalendar2 } from 'react-icons/bs';
 import { IoEyeOutline } from 'react-icons/io5';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
 import { formatLocalizedDate } from '~/utils/dateFormater';
-import { Article } from '@prisma/client';
 import * as cheerio from "cheerio";
 import Image from 'next/image';
 import Link from 'next/link';
-import ImageGallery from '../news/[category]/[slug]/_components/ImageGallery';
+import ImageGallery from '../read/[category]/[slug]/_components/ImageGallery';
 
 type News =  {
   id: string;

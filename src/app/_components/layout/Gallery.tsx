@@ -30,10 +30,11 @@ type Article = {
   publishedAt: Date | null;
 };
 const Carousel = ({ data }: { data: Article[] }) => {
-  if (data.length === 0) return null;
-
   // Başparmak (thumbnails) Swiper örneğini tutacak state
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
   const [thumbsSwiper, setThumbsSwiper] = useState<any>(null);
+
+  if (data.length === 0) return null;
 
   return (
     <div className="relative w-full  overflow-hidden rounded-xl shadow-2xl bg-gray-900 "> {/* Arka plan rengi eklendi */}
@@ -51,6 +52,7 @@ const Carousel = ({ data }: { data: Article[] }) => {
           // pagination={{ clickable: true, dynamicBullets: true }}
           effect="fade"
           fadeEffect={{ crossFade: true }}
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           thumbs={{ swiper: thumbsSwiper }}
           className="w-full h-full"
         >
@@ -108,7 +110,7 @@ const Carousel = ({ data }: { data: Article[] }) => {
       {/* Başparmak (Thumbnail) Carousel Bölümü */}
       <div className="w-full px-2 py-4 sm:px-4 mt-2">
         <Swiper
-          onSwiper={setThumbsSwiper}
+          onSwiper={(swiper) => setThumbsSwiper(swiper)}
           spaceBetween={10}
           slidesPerView={3}
           freeMode={true}

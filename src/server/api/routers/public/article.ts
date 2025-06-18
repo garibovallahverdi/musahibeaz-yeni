@@ -4,7 +4,7 @@ import redis from "~/server/redisClient";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import slugify from 'slugify';
 import { v4 as uuidv4 } from "uuid";
-import { Article, ArticleStatus, Prisma } from "@prisma/client";
+import { ArticleStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 export const articleRouter = createTRPCRouter({
 
@@ -26,6 +26,12 @@ export const articleRouter = createTRPCRouter({
                 select: {
                   name: true,
                   urlName: true,
+                  parent:{
+                    select:{
+                      name:true,
+                      urlName:true
+                    }
+                  }
                 },
               },
             },
@@ -49,7 +55,7 @@ export const articleRouter = createTRPCRouter({
         }
       }),
       
-      getNewsByCategory: publicProcedure
+      getNewsBySubCategory: publicProcedure
       .input(z.object({
         limit: z.number(),
         cursor: z.string().optional(), 
@@ -62,7 +68,9 @@ export const articleRouter = createTRPCRouter({
           const articles = await ctx.db.article.findMany({
             where: {
               status: ArticleStatus.PUBLISHED,
-              category
+              categorie:{
+                urlName:category
+              }
             },
             select:{
               id: true,
@@ -70,10 +78,16 @@ export const articleRouter = createTRPCRouter({
               description: true,
               category: true,
               imageUrl: true,
-              categorie: {
+                   categorie: {
                 select: {
                   name: true,
                   urlName: true,
+                  parent:{
+                    select:{
+                      name:true,
+                      urlName:true
+                    }
+                  }
                 },
               },
               slug: true,
@@ -88,7 +102,12 @@ export const articleRouter = createTRPCRouter({
           });
     
           const count = await ctx.db.article.count({
-            where: { status: ArticleStatus.PUBLISHED, category }
+            where: {
+              status: ArticleStatus.PUBLISHED,
+              categorie:{
+                urlName:category
+              }
+            },
           });
     
           // if (!articles.length) {
@@ -111,6 +130,95 @@ export const articleRouter = createTRPCRouter({
         }
       }),
     
+    getNewsByMainCategory: publicProcedure
+      .input(z.object({
+        limit: z.number(),
+        cursor: z.string().optional(), 
+        category: z.string()
+      }))
+      .query(async ({ ctx, input }) => {
+        const { limit, cursor, category } = input;
+    
+        try {
+           const mainCategory = await ctx.db.category.findUnique({
+        where: { urlName: category },
+        include: {
+          children: true, // subkategoriyalar
+        },
+      });
+           if (!mainCategory) {
+        throw new Error("Belə bir kateqoriya tapılmadı");
+      }
+            const categoryList =  [...mainCategory.children.map(child => child.urlName)];
+
+          const articles = await ctx.db.article.findMany({
+            where: {
+              status: ArticleStatus.PUBLISHED,
+                categorie:{
+                  urlName:{
+                    in:categoryList
+                  }
+                }
+            },
+            select:{
+              id: true,
+              title: true,
+              description: true,
+              category: true,
+              imageUrl: true,
+              categorie: {
+                select: {
+                  name: true,
+                  urlName: true,
+                  parent:{
+                    select:{
+                      name:true,
+                      urlName:true
+                    }
+                  }
+                },
+              },
+              slug: true,
+              publishedAt: true,
+            },
+            take: limit,
+            skip: cursor ? 1 : 0, 
+            cursor: cursor ? { id: cursor } : undefined, 
+            orderBy: {
+              publishedAt: 'desc',
+            }
+          });
+    
+          const count = await ctx.db.article.count({
+           where: {
+              status: ArticleStatus.PUBLISHED,
+              categorie:{
+                  urlName:{
+                    in:categoryList
+                  }
+                }
+            },
+          });
+    
+          // if (!articles.length) {
+          //   throw new Error("Xəbər tapılmadı");
+          // } 
+          
+          const nextCursor = articles.length === limit ? articles[articles?.length - 1]?.id : null;
+    
+          return {
+            articles,
+            count,
+            nextCursor
+          };
+        } catch (error) {
+          if (error instanceof Error) {
+            throw new Error("Makale getirilirken hata oluştu: " + error.message);
+          } else {
+            throw new Error("Makale getirilirken bilinmeyen bir hata oluştu");
+          }
+        }
+      }),
 
 
       getById: publicProcedure
@@ -146,6 +254,18 @@ export const articleRouter = createTRPCRouter({
                   name: true,
                 },
               },
+              categorie:{
+                select:{
+                  name:true,
+                  urlName:true,
+                  parent:{
+                    select:{
+                      name:true,
+                      urlName:true
+                    }
+                  }
+                }
+              }
             },  
           });
     
@@ -205,6 +325,12 @@ export const articleRouter = createTRPCRouter({
               select: {
                 name: true,
                 urlName: true,
+                parent:{
+                    select:{
+                      name:true,
+                      urlName:true
+                    }
+                  }
               },
             },
           },
@@ -241,9 +367,21 @@ export const articleRouter = createTRPCRouter({
         take: limit,
         skip: (page - 1) * limit, // Sayfaya göre kaydırma işlemi
         orderBy: { publishedAt: 'desc' },
-        include:{
-          categorie:true
-        }
+           select: {
+            id: true,
+            title: true,
+            description: true,
+            category: true,
+            imageUrl: true,
+            slug: true,
+            publishedAt: true,
+            categorie: {
+              select: {
+                name: true,
+                urlName: true,
+              },
+            },
+          },
       });
 
       const totalCount = await ctx.db.article.count({

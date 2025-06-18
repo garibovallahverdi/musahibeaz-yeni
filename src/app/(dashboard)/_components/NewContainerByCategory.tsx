@@ -12,6 +12,7 @@ import NewsCard from "~/app/_components/common/NewsCard";
 import SkeletonLoader from "~/app/_components/general/SkeletonLoader";
 import Link from "next/link";
 
+
 type Article = {
   id: string;
   category: string;
@@ -28,28 +29,26 @@ type Article = {
 };
 
 
-type Tag = {
-  id: string;
-  name: string; 
-  tagValue: string;
-}
+
 type Category = {
-  id: string;
   name: string; 
   urlName: string;
-  tags: Tag[];
-}
+  children: {
+    name:string,
+    urlName:string
+  }[];
+} | null
 
 type NewsContainerProps = {
   initialData: { articles: Article[]; count: number; nextCursor?: string };
-  category: string;
   limit: number;
-  categoryData?: Category; // optional, if you want to pass category data
+  categoryData: Category; // optional, if you want to pass category data
+  activeCategory?:string
 };
 
 const NewsContainerByCategory = ({
   initialData,
-  category,
+  activeCategory,
   categoryData,
   limit,
 }: NewsContainerProps) => {
@@ -75,11 +74,21 @@ const NewsContainerByCategory = ({
 
     setIsFetching(true);
     try {
-      const res = await trpcClient.public.article.getNewsByCategory.fetch({
-        category,
-        limit,
-        cursor: nextCursor,
-      });
+      let res;
+      if(activeCategory){
+
+         res = await trpcClient.public.article.getNewsBySubCategory.fetch({
+          category:activeCategory,
+          limit,
+          cursor: nextCursor,
+        });
+      }else {
+           res = await trpcClient.public.article.getNewsByMainCategory.fetch({
+          category:categoryData!.urlName,
+          limit,
+          cursor: nextCursor,
+        });
+      }
 
       setArticles((prev) => [...prev, ...(res.articles as Article[])]);
       setNextCursor(res.nextCursor ?? undefined);
@@ -87,7 +96,7 @@ const NewsContainerByCategory = ({
       console.error("Infinite-scroll fetch error:", e);
     }
     setIsFetching(false);
-  }, [nextCursor, isFetching, category, limit, trpcClient]);
+  }, [nextCursor, isFetching, limit, trpcClient]);
 
   /* ----------------- observer --------------- */
   const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -99,7 +108,7 @@ const NewsContainerByCategory = ({
     const observer = new IntersectionObserver(
       (entries) => {
         const first = entries[0];
-        if (first && first.isIntersecting) void fetchMoreData();
+        if (first?.isIntersecting) void fetchMoreData();
       },
       {
         root: null,         // viewport
@@ -118,18 +127,18 @@ const NewsContainerByCategory = ({
       <p className="pl-2 text-2xl text-titleText uppercase">{categoryData?.name}</p>
       <div className="flex gap-3 overflow-x-auto scrollbar-hide text-nowrap">
     {
-          (categoryData?.tags && categoryData.tags.length > 0) && (
-            categoryData.tags.map((tag) => (
-              <Link
-                key={tag.id}
-                href={`/tag/${tag.tagValue}`}
-                className="pl-2 text-sm text-tagText px-2 py-1 border w-max border-border"
-              >
-                {tag.name}
-              </Link>
+          (categoryData?.children && categoryData.children.length > 0) && (
+            categoryData.children.map((child) => (
+                <Link
+                key={child.urlName}
+                href={`/${categoryData.urlName}/${child.urlName}`}
+                className={`pl-2 text-sm text-tagText px-2 py-1  w-max 
+                  ${activeCategory === child.urlName?"border-b-4 border-b-blue-500":""}`}
+                >
+                {child.name}
+                </Link>
             ))
           ) }
-       
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
         {articles.map((a) => (

@@ -9,7 +9,13 @@ export const editorGeneralRouter = createTRPCRouter({
   .query(async({ctx})=>{
     try {
      
-      const categories = await ctx.db.category.findMany();
+      const categories = await ctx.db.category.findMany({
+        where:{
+          NOT:{
+           parentId:null
+          }
+        }
+      });
       if (!categories || categories.length === 0) {
         throw new Error("Kategoriler bulunamadı");
       }

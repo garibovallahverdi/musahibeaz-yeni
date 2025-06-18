@@ -1,29 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FiSun, FiMoon, FiSearch, FiX, FiMenu } from "react-icons/fi";
 import { MdOutlineCancel } from "react-icons/md";
 import { useTheme } from "~/app/providers/ThemeProvider";
+import { ChevronRight } from "lucide-react";
+import AccordionItem from "../common/MobileMenuAccordionItem";
 
 type Category = {
-  id: string;
   name: string;
   urlName: string;
-  createdAt: Date;
-  updatedAt: Date;
-  parentId: string | null;
   children: Category[]; // Recursive type for nested children
 };
-
-
-type Tag = {
-  id: string;
-  name: string;
-  tagValue: string;
-  updatedAt: Date;
-} | null;
+ 
 
 const extraRoutes = [
   { href: "/about", label: "Haqqımızda" },
@@ -42,43 +33,55 @@ export default function Navbar({ category }: { category: Category[] }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
-  const allRoutes = [
-    { href: "/", label: "Əsas səhifə" },
-    ...(category?.map((c) => ({
-      href: `/news/${c?.urlName}`,
-      label: c?.name 
-    })) ?? []),
-  ];
+    const allRoutes = [
+      ...(category?.map((c) => {
+        const categoryRoute = {
+          href: `/${c.urlName}`,
+          label: c?.name,
+          children: c.children ? c.children.map((child) => ({
+            href: `/${c.urlName}/${child?.urlName}`,
+            label: child?.name,
+          })) : [],
+        };
+
+        return categoryRoute;
+      }) ?? []),
+    ];
 
 
-  console.log(category, "categorrryy");
+  console.log(allRoutes[12], "childres");
+  
+useEffect(() => {
+    if (mobileMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenu]);
+
   
 
   const mainLinks = allRoutes.slice(0, 5);
-  const moreLinks = allRoutes.slice(5);
+  const moreLinks = allRoutes
 
   return (
     <nav className="bg-background border-b  border-gray-200 dark:border-gray-700 shadow-sm z-50">
       {/* Mobil Menü */}
       {mobileMenu && (
-        <div className="fixed inset-0 z-[999] bg-background dark:bg-gray-900 flex flex-col p-8">
+        <div className="fixed inset-0 overflow-y-auto z-[999] bg-background dark:bg-gray-900 flex flex-col p-8">
           <div className="flex justify-end items-center mb-6">
             <MdOutlineCancel
               onClick={() => setIsMobileMenu(false)}
               className="text-3xl cursor-pointer text-titleText hover:text-blue-600 transition-all"
             />
           </div>
-          <div className="flex flex-col justify-center items-center space-y-4">
+          <div className="flex flex-col justify-start items-start space-y-4">
             {allRoutes.map((route, idx) => (
-              <Link
-                key={idx}
-                href={route.href}
-                prefetch={false}
-                onClick={() => setIsMobileMenu(false)}
-                className="text-lg font-semibold uppercase text-titleText hover:text-blue-600 truncate"
-              >
-                {route.label}
-              </Link>
+              <AccordionItem key={idx} route={route} />
+              
             ))}
           </div>
         </div>
@@ -123,17 +126,27 @@ export default function Navbar({ category }: { category: Category[] }) {
                   >
                     <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       {moreLinks.map((link, idx) => (
-                        <div key={idx}>
-                          <Link
-                            href={link.href}
-                            prefetch={false}
-                            className="block uppercase text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 truncate"
+                        <div key={idx} className="flex flex-col gap-2">
+                          <p
+                            // href={link.href}
+                            // prefetch={false}
+                            className="block uppercase text-sm font-semibold text-gray-900 dark:text-white  truncate"
                           >
                             {link.label}
-                          </Link>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">
-                            {link.label} haqqında qısa məlumat buraya əlavə oluna bilər.
                           </p>
+ <div className="flex flex-col gap-1">
+  {link.children.length > 0 &&
+    link.children.map(({href, label}, index) => (
+      <Link
+        key={index}
+        href={href}
+        prefetch={false}
+        className="block uppercase text-xs font-normal text-gray-900 dark:text-white hover:text-blue-600 truncate"
+      >
+        {label}
+      </Link>
+    ))}
+</div>
                         </div>
                       ))}
                     </div>

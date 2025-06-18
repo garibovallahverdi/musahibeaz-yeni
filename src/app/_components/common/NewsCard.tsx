@@ -21,7 +21,7 @@ type Article = {
 const NewsCard = ({ article }: { article: Article }) => {
   return (
     <div className=" rounded-md overflow-hidden shadow hover:shadow-lg transition-transform duration-300 hover:-translate-y-1">
-      <Link href={`/news/${article.category}/${article.slug}`} className="block group">
+      <Link href={`/read/${article.categorie.urlName}/${article.slug}`} className="block group">
         {/* Görsel Alanı */}
         <div className="relative h-36 sm:h-40 md:h-44 lg:h-48 w-full overflow-hidden">
           <Image

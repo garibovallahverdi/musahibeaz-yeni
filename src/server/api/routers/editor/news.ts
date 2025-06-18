@@ -6,6 +6,9 @@ import { v4 as uuidv4 } from "uuid";
 import { ArticleStatus } from "@prisma/client";
 import redis from "~/server/redisClient";
 import { TRPCError } from "@trpc/server";
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('1234567890abcdef', 6);
 export const editorArticleRouter = createTRPCRouter({
 
 create: editoreProcedure
@@ -24,9 +27,7 @@ create: editoreProcedure
         lower: true,
         strict: true,
       });
-      const uniqueId = uuidv4();
-      const slug = slugText + "-" + uniqueId; // Slug'ı benzersiz hale getirin
-
+      const slug = `${slugText}-${nanoid()}`;
       try {
         const categories = await ctx.db.category.findFirst({
           where: { urlName: input.category },

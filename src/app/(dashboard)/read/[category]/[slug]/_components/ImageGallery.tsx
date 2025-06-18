@@ -93,13 +93,15 @@ export default function ImageGallery({ images }: Props) {
 
           {/* Görsel */}
           <div className="max-h-[90vh] overflow-y-auto flex items-center justify-center">
-            <img
-              src={images[currentIndex]}
-              alt={`slider-${currentIndex}`}
-              loading="lazy"
-              onClick={(e) => e.stopPropagation()}
-              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-            />
+            {images[currentIndex] && (
+              <Image
+                src={images[currentIndex]}
+                alt={`slider-${currentIndex}`}
+                loading="lazy"
+                onClick={(e) => e.stopPropagation()}
+                className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+              />
+            )}
           </div>
 
           {/* Sonraki Buton */}

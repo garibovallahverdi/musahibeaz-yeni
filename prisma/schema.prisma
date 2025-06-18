@@ -1,126 +1,126 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+  // This is your Prisma schema file,
+  // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-    provider = "prisma-client-js"
-}
+  generator client {
+      provider = "prisma-client-js"
+  }
 
-datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-}
-model Article {
-  id          String        @id @default(uuid())
-  title       String        @db.Text
-  slug        String        @unique 
-  content     String        @db.Text
-  description String        @db.Text
-  imageUrl    String[]      // Bu, haber içeriğindeki ana görseller için
-  multimedia  Boolean       @default(false)
-  galleryImages String[]    @default([]) // <-- YENİ EKLENDİ: Galeri görselleri için
-  authorId    String
-  author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category    String
-  categorie   Category?     @relation(fields: [categoryId], references: [id])
-  categoryId  String?
-  status      ArticleStatus @default(DRAFT)
-  publishedAt DateTime?
-  tags        Tag[]         @relation("Tags")
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  datasource db {
+      provider = "postgresql"
+      url      = env("DATABASE_URL")
+  }
+  model Article {
+    id          String        @id @default(uuid())
+    title       String        @db.Text
+    slug        String        @unique 
+    content     String        @db.Text
+    description String        @db.Text
+    imageUrl    String[]      // Bu, haber içeriğindeki ana görseller için
+    multimedia  Boolean       @default(false)
+    galleryImages String[]    @default([]) // <-- YENİ EKLENDİ: Galeri görselleri için
+    authorId    String
+    author      User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+    category    String
+    categorie   Category     @relation(fields: [categoryId], references: [id])
+    categoryId  String
+    status      ArticleStatus @default(DRAFT)
+    publishedAt DateTime?
+    tags        Tag[]         @relation("Tags")
+    createdAt   DateTime      @default(now())
+    updatedAt   DateTime      @updatedAt
 
-  @@index([slug])
-  @@index([categoryId])
-}
+    @@index([slug])
+    @@index([categoryId])
+  }
 
-enum ArticleStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
+  enum ArticleStatus {
+    DRAFT
+    PUBLISHED
+    ARCHIVED
+  }
 
-model Tag {
-  id    String   @id @default(uuid()) 
-  name  String   @unique
-  tagValue String @default("")
-  news  Article[]   @relation("Tags") 
-  categoryId    String
-  category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
-}
+  model Tag {
+    id    String   @id @default(uuid()) 
+    name  String   @unique
+    tagValue String @default("")
+    news  Article[]   @relation("Tags") 
+    categoryId    String
+    category      Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    updatedAt DateTime @updatedAt
+    createdAt DateTime @default(now())
+  }
 
-model Category {
-  id         String     @id @default(uuid())
-  name       String     @unique
-  urlName    String     @unique
-  tags       Tag[]
-  article    Article[]
-  parentId   String?
-  parent     Category?  @relation("CategoryToSub", fields: [parentId], references: [id])
-  children   Category[] @relation("CategoryToSub")
-  updatedAt  DateTime   @updatedAt
-  createdAt  DateTime   @default(now())
-}
+  model Category {
+    id         String     @id @default(uuid())
+    name       String     @unique
+    urlName    String     @unique
+    tags       Tag[]
+    article    Article[]
+    parentId   String?
+    parent     Category?  @relation("CategoryToSub", fields: [parentId], references: [id], onDelete: Cascade)
+    children   Category[] @relation("CategoryToSub")
+    updatedAt  DateTime   @updatedAt
+    createdAt  DateTime   @default(now())
+  }
 
 
-model Session {
-  id             String   @id @default(uuid())
-  expiresAt      DateTime
-  token          String   @unique
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  ipAddress      String?
-  userAgent      String?
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  impersonatedBy String?
+  model Session {
+    id             String   @id @default(uuid())
+    expiresAt      DateTime
+    token          String   @unique
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+    ipAddress      String?
+    userAgent      String?
+    userId         String
+    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    impersonatedBy String?
 
-  @@map("session")
-}
+    @@map("session")
+  }
 
-model Account {
-  id                    String   @id @default(uuid())
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  model Account {
+    id                    String   @id @default(uuid())
+    accountId             String
+    providerId            String
+    userId                String
+    user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accessToken           String?
+    refreshToken          String?
+    idToken               String?
+    accessTokenExpiresAt  DateTime?
+    refreshTokenExpiresAt DateTime?
+    scope                 String?
+    password              String?
+    createdAt             DateTime @default(now())
+    updatedAt             DateTime @updatedAt
 
-  @@map("account")
-}
+    @@map("account")
+  }
 
-model User {
-  id            String   @id @default(cuid())
-  email         String   @unique()
-  password      String?
-  name          String?
-  image         String?
-  articles      Article[]
-  adminAccept   Boolean @default(false)
-  emailVerified Boolean  @default(false)
-  role          String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-}
+  model User {
+    id            String   @id @default(cuid())
+    email         String   @unique()
+    password      String?
+    name          String?
+    image         String?
+    articles      Article[]
+    adminAccept   Boolean @default(false)
+    emailVerified Boolean  @default(false)
+    role          String?
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    accounts      Account[]
+    sessions      Session[]
+  }
 
-model Verification {
-  id         String    @id @default(uuid())
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt
+  model Verification {
+    id         String    @id @default(uuid())
+    identifier String
+    value      String
+    expiresAt  DateTime
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime? @updatedAt
 
-  @@map("verification")
-}
+    @@map("verification")
+  }

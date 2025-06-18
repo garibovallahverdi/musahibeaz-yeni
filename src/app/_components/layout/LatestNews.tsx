@@ -3,8 +3,20 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { formatLocalizedDate } from "~/utils/dateFormater";
-import type { Article } from "@prisma/client";
 
+type Article = {
+  id: string;
+  category: string;
+  slug: string;
+  title: string;
+  description: string;
+  categorie: {
+    name: string;
+    urlName: string;
+  };
+  imageUrl: string[] | null;
+  publishedAt: Date | null;
+};
 const LatestNews = ({
   initialData,
 }: {
@@ -46,7 +58,7 @@ const LatestNews = ({
 
             <div className="flex flex-col flex-grow gap-1 sm:gap-2">
               <Link
-                href={`/news/${article.category}/${article.slug}`}
+                href={`/read/${article.categorie.urlName}/${article.slug}`}
                 className="text-sm font-semibold leading-tight transition-colors duration-200 "
                 style={{ color: "rgb(var(--titleText))" }}
                 onMouseOver={(e) =>
@@ -63,7 +75,7 @@ const LatestNews = ({
                 className="text-xs"
                 style={{ color: "rgb(var(--tagText))" }}
               >
-                {formatLocalizedDate(article.publishedAt || new Date())}
+                {formatLocalizedDate(article.publishedAt ?? new Date())}
               </span>
             </div>
           </motion.li>

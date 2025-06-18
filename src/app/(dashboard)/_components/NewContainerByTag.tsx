@@ -97,7 +97,7 @@ const NewsContainerByTag = ({
     const observer = new IntersectionObserver(
       (entries) => {
         const first = entries[0];
-        if (first && first.isIntersecting) void fetchMoreData();
+        if (first?.isIntersecting) void fetchMoreData();
       },
       {
         root: null,         // viewport

@@ -1,7 +1,7 @@
 import React from 'react';
 import Carousel from '../_components/layout/Gallery';
 import Steps from '../_components/layout/Steps';
-import MainPageCategpry from './_components/MainPageCategpry';
+// import MainPageCategpry from './_components/MainPageCategpry';
 import Slider from '../_components/layout/Slider';
 import { api } from '~/trpc/server';
 import LatestNews from '../_components/layout/LatestNews';
@@ -18,36 +18,20 @@ const Home = async () => {
     <div className="grid grid-cols-1 lg:grid-cols-6 gap-2 ">
       <div className="lg:col-span-4">
       {article && (
-
           <Carousel
-            data={article.article.map((a: any) => ({
-              ...a,
-              content: a.content ?? "",
-              status: a.status ?? "DRAFT",
-              createdAt: a.createdAt ?? new Date(),
-              updatedAt: a.updatedAt ?? new Date(),
-              authorId: a.authorId ?? "",
-              categoryId: a.categoryId ?? null,
-            }))}
+            data={article.article}
           />
-        
       )}
       {initialData.articles.length > 0 && (
         <Steps
-          initialData={{
-            ...initialData,
-            articles: initialData.articles.map((item: any) => ({
-              ...item,
-              categorie: item.categorie ?? { name: '', urlName: '' },
-            })),
-          }}
+          initialData={initialData}
         />
       )}
 
       {/* Kategoriler İçin Dinamik Veri */}
       <div className="flex flex-col gap-6">
-        <MainPageCategpry category="siyaset" />
-        <MainPageCategpry category="idman" />
+        {/* <MainPageCategpry category="siyaset" /> */}
+        {/* <MainPageCategpry category="idman" /> */}
         {/* <MainPageCategpry category="Elm və Texnologiya" /> */}
         {/* <MainPageCategpry category="Mədəniyyət" /> */}
       </div>

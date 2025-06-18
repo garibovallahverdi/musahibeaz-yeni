@@ -49,7 +49,13 @@ export default async function Page(props: { params: Params }) {
         <div className="lg:col-span-1 space-y-6">
 
         {news?.tags && <RelatedBox category="Oxşar Xəbərlər" currentSlug={news.slug} tags={news.tags}/>}
-                  <LatestNews initialData={initialData2} />
+                  <LatestNews initialData={{
+                      articles: initialData2.articles.map(article => ({
+                          ...article,
+                          categorie: article.categorie ,
+                      })),
+                      totalPages: initialData2.totalPages,
+                  }} />
         </div>
         
       </div>

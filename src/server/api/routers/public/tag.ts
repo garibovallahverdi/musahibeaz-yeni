@@ -35,7 +35,7 @@ export const tagPublicRouter = createTRPCRouter({
       }),
 
 
-  getCategoryWithTags: publicProcedure
+  getCategoryWithChild: publicProcedure
   .input(z.object({ 
     urlName: z.string(),
   }))
@@ -43,17 +43,17 @@ export const tagPublicRouter = createTRPCRouter({
     try {
       const category = await ctx.db.category.findFirst({
         where: { urlName: input.urlName },
-        include: {
-          tags: 
-          {
-            // orderBy: {
-            //   news: {
-            //     _count: 'desc',
-            //   },
-            // },
-            take: 8,
-          },
-        },
+        select:{
+          name:true,
+          urlName:true,
+          children:{
+            select:{
+              name:true,
+              urlName:true
+            }
+          }
+        }
+     
       });
 
       if (!category) {
@@ -63,9 +63,9 @@ export const tagPublicRouter = createTRPCRouter({
       return category;
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(" ❌ Kateqoriya və taglar gətirilərkən xəta baş verdi. " + error.message);
+        throw new Error(" ❌ Kateqoriyalar gətirilərkən xəta baş verdi. " + error.message);
       } else {
-        throw new Error(" ❌ Kateqoriya və taglar gətirilərkən bilinməyən bir xəta baş verdi.");
+        throw new Error(" ❌ Kateqoriyalar gətirilərkən bilinməyən bir xəta baş verdi.");
       }
     }
   }),
@@ -157,6 +157,12 @@ export const tagPublicRouter = createTRPCRouter({
                 select: {
                   name: true,
                   urlName: true,
+                  parent:{
+                    select:{
+                      name:true,
+                      urlName:true
+                    }
+                  }
                 },
               },
               slug: true,
@@ -197,35 +203,22 @@ export const tagPublicRouter = createTRPCRouter({
  getCategory: publicProcedure
     .query(async ({ ctx }) => {
       try {
-        const categories = await ctx.db.category.findMany();
+        const categories = await ctx.db.category.findMany({
+          where:{
+            parentId:null
+          },
+          select:{
+            name:true,
+            urlName:true,
+            children:{
+              select:{
+                name:true,
+                urlName:true
+              }
+            }
+          }
 
-        // Uncomment and adjust this section if you still need to filter based on article count
-        // For example, if you only want to return main categories that have at least one article
-        // directly linked OR if any of their subcategories have an article.
-        // This logic can become complex quickly depending on exact requirements.
-        // const filteredCategories = await Promise.all(
-        //   categories.map(async (category) => {
-        //     // Count articles for the main category
-        //     const mainCategoryArticleCount = await ctx.db.article.count({
-        //       where: { categoryId: category.id }
-        //     });
-
-        //     // Count articles for all direct subcategories
-        //     const subCategoryArticleCounts = await Promise.all(
-        //       category.children.map(async (subCategory) => {
-        //         return await ctx.db.article.count({
-        //           where: { categoryId: subCategory.id }
-        //         });
-        //       })
-        //     );
-
-        //     const totalArticleCount = mainCategoryArticleCount + subCategoryArticleCounts.reduce((acc, count) => acc + count, 0);
-
-        //     return totalArticleCount > 0 ? category : null;
-        //   })
-        // );
-
-        // return filteredCategories.filter(Boolean); // Filter out nulls
+        });
 
         return categories; // Return all main categories with their children
       } catch (error) {

@@ -1,18 +1,30 @@
-import { Article } from '@prisma/client';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { formatLocalizedDate } from '~/utils/dateFormater';
 
-const RelatedNewsCard = ({ data }: { data: any }) => {
+type Article = {
+  id: string;
+  category: string;
+  slug: string;
+  title: string;
+  description: string;
+  categorie: {
+    name: string;
+    urlName: string;
+  };
+  imageUrl: string[] | null;
+  publishedAt: Date | null;
+};
+const RelatedNewsCard = ({ data }: { data: Article }) => {
   return (
     <div className="bg-card_bg   rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-      <Link href={`/news/${data.category}/${data.slug}`}>
+      <Link href={`/read/${data.categorie.urlName}/${data.slug}`}>
         <div className="flex flex-col lg:flex-row h-full">
           {/* Resim Bloğu */}
           <div className="relative w-full lg:w-24 h-40 lg:h-20 flex-shrink-0">
             <Image
-              src={data.imageUrl[0] ?? "/placeholder.jpg"} // Fallback resim
+              src={(data.imageUrl ?? [])[0] ?? "/placeholder.jpg"} // Fallback resim
               alt={data.title}
               layout="fill"
               objectFit="cover"
