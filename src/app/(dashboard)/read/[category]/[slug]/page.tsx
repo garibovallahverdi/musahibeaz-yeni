@@ -18,6 +18,7 @@ export async function generateMetadata(props: { params: Params }): Promise<Metad
     description: news?.description || "Ən son xəbərləri oxuyun.",
     alternates: { canonical: `https://musahibe.az/read/${news.categorie?.urlName}/${news.slug}` },
     openGraph: {
+      
       title: news?.title || "Xəbər Detayı",
       description: news?.description || "Ən son xəbərləri oxuyun.",
       url: `https://musahibe.az/read/${news.categorie?.urlName}/${news.slug}`,

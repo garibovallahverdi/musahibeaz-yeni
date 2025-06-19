@@ -8,6 +8,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import { useTheme } from "~/app/providers/ThemeProvider";
 import { ChevronRight } from "lucide-react";
 import AccordionItem from "../common/MobileMenuAccordionItem";
+import SocialMediLinks from "../common/SocialMediLinks";
 
 type Category = {
   name: string;
@@ -64,9 +65,27 @@ useEffect(() => {
 
   
 
-  const mainLinks = allRoutes.slice(0, 5);
+  const mainLinks = allRoutes;
   const moreLinks = allRoutes
+  // const mainLinks = [
+  //   {
+  //     label:"Si̇yasət",
+  //     href: "/si̇yaset"
+  //   },
+  //      {
+  //     label:"İdman",
+  //     href: "/i̇dman"
+  //   },
+  //      {
+  //     label:"İqti̇sadi̇yyat",
+  //     href: "/i̇qti̇sadi̇yyat"
+  //   },
+  //      {
+  //     label:"Cəmi̇yyət",
+  //     href: "/cemi̇yyet"
+  //   },
 
+  // ]
   return (
     <nav className="bg-background border-b  border-gray-200 dark:border-gray-700 shadow-sm z-50">
       {/* Mobil Menü */}
@@ -97,7 +116,7 @@ useEffect(() => {
           </Link>
 
           {/* Menü - Desktop */}
-          <div className="hidden lg:flex items-center space-x-4">
+          {/* <div className="hidden lg:flex items-center space-x-4   lg:w-auto px-4 py-2 rounded-lg">
             {mainLinks.map((link, idx) => (
               <Link
                 key={idx}
@@ -116,8 +135,9 @@ useEffect(() => {
                   onClick={() => setDropdownOpen(!dropdownOpen)}
                   className="text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm flex items-center"
                 >
-                  Daha çox <span className="ml-1 text-xs">▼</span>
+                  HAMSI <span className="ml-1 text-xs">▼</span>
                 </button>
+              
 
                 {dropdownOpen && (
                   <div
@@ -154,8 +174,13 @@ useEffect(() => {
                 )}
               </div>
             )}
-          </div>
+          
+          </div> */}
+          <div className="flex items-center justify-between  lg:w-auto space-x-4">
 
+            <div className="hidden lg:block ">
+              <SocialMediLinks/>
+            </div>
           {/* Sağ Butonlar */}
           <div className="flex items-center space-x-3">
           
@@ -166,12 +191,82 @@ useEffect(() => {
               <FiMenu size={20} />
             </button>
           </div>
+          </div>
+
         </div>
 
         {/* TagList ya da Search */}
         {/* <div className="w-full flex items-center justify-between py-4">
           <TagsList tag={tag ?? []} />
         </div> */}
+        <div className="hidden w-full  lg:flex justify-center border-b-2  border-border py-2">
+
+         <div className="items-center space-x-4  flex justify-between gap-5">
+          <div className="items-center space-x-4  flex w-auto     px-4 py-2 rounded-lg">
+
+            {mainLinks.map((link, idx) => (
+              <Link
+                key={idx}
+                href={link.href}
+                prefetch={false}
+                className="max-w-max uppercase whitespace-nowrap overflow-hidden text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm"
+                title={link.label}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+            {moreLinks.length > 0 && (
+              <div className="">
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm flex items-center"
+                >
+               <FiMenu size={20} />
+                </button>
+              
+
+                {dropdownOpen && (
+                  <div
+                    className="absolute left-0 top-full w-full  bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg mt-2 z-50"
+                    onMouseLeave={() => setDropdownOpen(false)}
+                  >
+                    <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                      {moreLinks.map((link, idx) => (
+                        <div key={idx} className="flex flex-col gap-2">
+                          <p
+                            // href={link.href}
+                            // prefetch={false}
+                            className="block uppercase text-sm font-semibold text-gray-900 dark:text-white  truncate"
+                          >
+                            {link.label}
+                          </p>
+ <div className="flex flex-col gap-1">
+  {link.children.length > 0 &&
+    link.children.map(({href, label}, index) => (
+      <Link
+        key={index}
+        href={href}
+        prefetch={false}
+        className="block uppercase text-xs font-normal text-gray-900 dark:text-white hover:text-blue-600 truncate"
+      >
+        {label}
+      </Link>
+    ))}
+</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          
+          </div>
+
+        </div>
+
       </div>
     </nav>
   );

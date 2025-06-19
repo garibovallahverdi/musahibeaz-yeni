@@ -31,7 +31,7 @@ const NewsCard = ({ article }: { article: Article }) => {
             height={300}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
-          <span className="absolute top-2 uppercase left-2 bg-buttonBg text-white text-xs font-semibold px-2 py-1 rounded-full shadow">
+          <span className="absolute top-2 uppercase left-2 bg-buttonBg bg-opacity-50 text-white text-[9px] font-semibold px-2 py-1 rounded-full shadow">
             {article.categorie.name}
           </span>
         </div>

@@ -141,12 +141,12 @@ create: editoreProcedure
 
       // Only update slug if title changed
       if (input.title && input.title !== existingArticle.title) {
-        const slugText = slugify(input.title, {
-          lower: true,
-          strict: true,
-        });
-        const uniqueId = uuidv4();
-        updateData.slug = slugText + uniqueId;
+          const slugText = slugify(input.title, {
+        lower: true,
+        strict: true,
+      });
+      const slug = `${slugText}-${nanoid()}`;
+        updateData.slug = slug;
       }
 
       // Handle tags update
