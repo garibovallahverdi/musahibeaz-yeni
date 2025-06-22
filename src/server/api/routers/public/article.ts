@@ -386,6 +386,7 @@ export const articleRouter = createTRPCRouter({
 
       const totalCount = await ctx.db.article.count({
         where: { status: ArticleStatus.PUBLISHED },
+        take:30
       });
 
       return {

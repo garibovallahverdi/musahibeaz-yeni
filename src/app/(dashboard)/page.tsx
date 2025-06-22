@@ -5,6 +5,7 @@ import Steps from '../_components/layout/Steps';
 import Slider from '../_components/layout/Slider';
 import { api } from '~/trpc/server';
 import LatestNews from '../_components/layout/LatestNews';
+import MainPageCategpry from './_components/MainPageCategpry';
 
 export const revalidate = 30;  // 60 saniyede bir yeniden oluşturulacak
 
@@ -30,9 +31,9 @@ const Home = async () => {
 
       {/* Kategoriler İçin Dinamik Veri */}
       <div className="flex flex-col gap-6">
-        {/* <MainPageCategpry category="siyaset" /> */}
-        {/* <MainPageCategpry category="idman" /> */}
-        {/* <MainPageCategpry category="Elm və Texnologiya" /> */}
+        <MainPageCategpry category="futbol" header="Futbol" />
+        <MainPageCategpry category="turizm" header="Turizm" />
+        <MainPageCategpry category="iqtisadi-gostericiler" header="İqtisadi göstəricilər" />
         {/* <MainPageCategpry category="Mədəniyyət" /> */}
       </div>
 

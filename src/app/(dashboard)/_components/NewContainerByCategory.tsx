@@ -133,7 +133,7 @@ const NewsContainerByCategory = ({
                 key={child.urlName}
                 href={`/${categoryData.urlName}/${child.urlName}`}
                 className={`pl-2 text-sm text-tagText px-2 py-1  w-max 
-                  ${activeCategory === child.urlName?"border-b-4 border-b-blue-500":""}`}
+                  ${activeCategory == child.urlName?"border-b-4 border-b-blue-500":""}`}
                 >
                 {child.name}
                 </Link>

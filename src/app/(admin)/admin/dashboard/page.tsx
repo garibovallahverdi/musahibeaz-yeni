@@ -6,9 +6,7 @@ import { api } from "~/trpc/react";
 import Loading from "../_components/loading";
 import Link from "next/link";
 import Image from "next/image";
-import { formatLocalizedDate } from '~/utils/dateFormater'
 import { useUser } from "~/app/hooks/useUser";
-import { logger } from "better-auth";
 
 const Page = () => {
   const [page, setPage] = useState(1);

@@ -103,7 +103,7 @@ const UsersPage = () => {
                         )}
                       </button>
                     ) : (
-                      <span className="text-red-500 text-sm">Hesap aktif deyil</span>
+                      <span className="text-red-500 text-sm">Hesab aktiv deyil</span>
                     )}
                   </>
                 )}
@@ -120,15 +120,15 @@ const UsersPage = () => {
           onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
           className="bg-gray-500 text-white px-4 py-1 rounded disabled:opacity-50"
         >
-          Önceki
+          Əvvəlki
         </button>
-        <span>Sayfa {page}</span>
+        <span>Səhifə {page}</span>
         <button
           disabled={data.count <= page * limit}
           onClick={() => setPage((prev) => prev + 1)}
           className="bg-gray-500 text-white px-4 py-1 rounded disabled:opacity-50"
         >
-          Sonraki
+          Sonrakı
         </button>
       </div>
     </div>

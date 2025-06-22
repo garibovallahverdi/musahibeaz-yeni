@@ -107,75 +107,16 @@ useEffect(() => {
       )}
 
       {/* Desktop Navbar */}
-      <div className="max-w-screen-xl relative mx-auto px-4 ">
-        <div className="flex items-center justify-between h-16 relative">
+      <div className="max-w-screen-xl relative mx-auto px-4 py-2">
+        <div className="flex items-center justify-between h-16  relative">
           {/* Logo */}
           <Link href="/" prefetch={false} className="flex items-center space-x-2">
             <Image width={32} height={32} src="/logo.png" alt="Logo" className="h-8 w-8" />
-            <span className="text-2xl hidden sm:block font-bold text-gray-900 dark:text-white">Musahibe.az</span>
+            <span className="text-2xl hidden sm:block font-bold text-gray-900 dark:text-white">MÜSAHİBƏ</span>
           </Link>
+           
 
-          {/* Menü - Desktop */}
-          {/* <div className="hidden lg:flex items-center space-x-4   lg:w-auto px-4 py-2 rounded-lg">
-            {mainLinks.map((link, idx) => (
-              <Link
-                key={idx}
-                href={link.href}
-                prefetch={false}
-                className="max-w-max uppercase whitespace-nowrap overflow-hidden text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm"
-                title={link.label}
-              >
-                {link.label}
-              </Link>
-            ))}
-
-            {moreLinks.length > 0 && (
-              <div className="">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm flex items-center"
-                >
-                  HAMSI <span className="ml-1 text-xs">▼</span>
-                </button>
-              
-
-                {dropdownOpen && (
-                  <div
-                    className="absolute left-0 top-full w-full  bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg mt-2 z-50"
-                    onMouseLeave={() => setDropdownOpen(false)}
-                  >
-                    <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      {moreLinks.map((link, idx) => (
-                        <div key={idx} className="flex flex-col gap-2">
-                          <p
-                            // href={link.href}
-                            // prefetch={false}
-                            className="block uppercase text-sm font-semibold text-gray-900 dark:text-white  truncate"
-                          >
-                            {link.label}
-                          </p>
- <div className="flex flex-col gap-1">
-  {link.children.length > 0 &&
-    link.children.map(({href, label}, index) => (
-      <Link
-        key={index}
-        href={href}
-        prefetch={false}
-        className="block uppercase text-xs font-normal text-gray-900 dark:text-white hover:text-blue-600 truncate"
-      >
-        {label}
-      </Link>
-    ))}
-</div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          
-          </div> */}
+       
           <div className="flex items-center justify-between  lg:w-auto space-x-4">
 
             <div className="hidden lg:block ">
@@ -195,10 +136,8 @@ useEffect(() => {
 
         </div>
 
-        {/* TagList ya da Search */}
-        {/* <div className="w-full flex items-center justify-between py-4">
-          <TagsList tag={tag ?? []} />
-        </div> */}
+          {/* Menü - Desktop */}
+
         <div className="hidden w-full  lg:flex justify-center border-b-2  border-border py-2">
 
          <div className="items-center space-x-4  flex justify-between gap-5">

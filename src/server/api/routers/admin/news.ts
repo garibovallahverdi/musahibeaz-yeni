@@ -176,6 +176,7 @@ createCategory: adminProcedure
           .replace(/ü/g, "u")
           .replace(/ç/g, "c")
           .replace(/ş/g, "s")
+          .replace(/ö/g, "o")
           .replace(/ğ/g, "g")
       )
       .join("-");

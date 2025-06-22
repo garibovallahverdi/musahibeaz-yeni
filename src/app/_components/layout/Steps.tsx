@@ -121,7 +121,7 @@ const Steps = ({ initialData }: { initialData: { articles: Article[], totalPages
                 key={pageNum}
                 onClick={() => setPage(pageNum)}
                 disabled={isFetching}
-                className={`px-4 py-2 rounded-lg transition duration-300 text-sm ${
+                className={`px-2 py-1 rounded-lg transition duration-300 text-xs ${
                   page === pageNum ? "bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300"
                 }`}
               >
