@@ -138,7 +138,7 @@ useEffect(() => {
 
           {/* Menü - Desktop */}
 
-        <div className="hidden w-full  lg:flex justify-center border-b-2  border-border py-2">
+        <div className="hidden w-full  lg:flex justify-center  py-2">
 
          <div className="items-center space-x-4  flex justify-between gap-5">
           <div className="items-center space-x-4  flex w-auto     px-4 py-2 rounded-lg">

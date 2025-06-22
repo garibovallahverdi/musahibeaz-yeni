@@ -71,27 +71,27 @@ const ShowDetail = ({ news }: { news: News  }) => {
 
   const optimizedContent = cleanHTML(news.content);
 
-  useEffect(() => {
+  // useEffect(() => {
    
-    const content = document.querySelector(".news-detail-content");
-    if (content) {
-      const images = content.querySelectorAll("img");
-      images.forEach((img) => {
-        img.addEventListener("click", () => handleImageClick(img.getAttribute("src") ?? ""));
-        img.style.cursor = "pointer"; // Tıklanabilir hale getir
-      });
-    }
+  //   const content = document.querySelector(".news-detail-content");
+  //   if (content) {
+  //     const images = content.querySelectorAll("img");
+  //     images.forEach((img) => {
+  //       img.addEventListener("click", () => handleImageClick(img.getAttribute("src") ?? ""));
+  //       img.style.cursor = "pointer"; // Tıklanabilir hale getir
+  //     });
+  //   }
   
-    return () => {
-      const content = document.querySelector(".news-detail-content");
-      if (content) {
-        const images = content.querySelectorAll("img");
-        images.forEach((img) => {
-          img.removeEventListener("click", () => handleImageClick(img.getAttribute("src") ?? ""));
-        });
-      }
-    }
-  }, [optimizedContent, modalImage]); // optimizedContent değiştiğinde yeniden çalışır
+  //   return () => {
+  //     const content = document.querySelector(".news-detail-content");
+  //     if (content) {
+  //       const images = content.querySelectorAll("img");
+  //       images.forEach((img) => {
+  //         img.removeEventListener("click", () => handleImageClick(img.getAttribute("src") ?? ""));
+  //       });
+  //     }
+  //   }
+  // }, [optimizedContent, modalImage]); // optimizedContent değiştiğinde yeniden çalışır
   
   return (
     <div className="">
@@ -122,7 +122,7 @@ const ShowDetail = ({ news }: { news: News  }) => {
         />
       </div>
              {
-  news.galleryImages && (
+  (news.galleryImages && news.galleryImages.length > 0) && (
 
     <ImageGallery images={news.galleryImages}/>
   )
@@ -155,7 +155,7 @@ const ShowDetail = ({ news }: { news: News  }) => {
       </div>
         
       {/* Modal */}
-      {modalImage && (
+      {/* {modalImage && (
         <div
           className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-80 flex items-center justify-center z-50"
           onClick={closeModal}
@@ -169,7 +169,7 @@ const ShowDetail = ({ news }: { news: News  }) => {
             alt="Expanded"
           />
         </div>
-      )}
+      )} */}
 
     </div>
   );

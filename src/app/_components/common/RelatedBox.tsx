@@ -9,10 +9,11 @@ interface Tag {
   name: string;
 }
 
-const RelatedBox = ({ tags ,currentSlug, category}: { tags: Tag[],currentSlug:string, category:string }) => {
-
-      const {data, isPending} =  api.public.article.getRelatedNews.useQuery({ tags: tags ?? [],currentSlug });
-    
+const RelatedBox = ({ tags ,currentSlug, category,parentCategory}: { tags: Tag[],currentSlug:string, category:string,parentCategory:string | undefined }) => {
+  
+  const {data, isPending} =  api.public.article.getRelatedNews.useQuery({ tags: tags ?? [],currentSlug, category:parentCategory! });
+  
+  console.log(data, "dataaaaaaaaa");
   return (
        <div className="lg:col-span-1 space-y-6">
           <h3 className="text-2xl font-semibold text-titleText">{category}</h3>

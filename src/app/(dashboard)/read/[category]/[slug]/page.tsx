@@ -41,7 +41,8 @@ export default async function Page(props: { params: Params }) {
         <div className="lg:col-span-2 space-y-6">
 
          <ShowDetail news={news}/>
-        {news?.tags && <RelatedBox category="Vacib Xəbərlər" currentSlug={news.slug} tags={news.tags}/>}
+        {news?.tags && <RelatedBox category="Vacib Xəbərlər" parentCategory={news.categorie.parent?.urlName} currentSlug={news.slug} tags={news.tags}/>}
+
         </div>
 
 
@@ -49,7 +50,7 @@ export default async function Page(props: { params: Params }) {
         
         <div className="lg:col-span-1 space-y-6">
 
-        {news?.tags && <RelatedBox category="Oxşar Xəbərlər" currentSlug={news.slug} tags={news.tags}/>}
+        {news?.tags && <RelatedBox category="Oxşar Xəbərlər" parentCategory={news.categorie.parent?.urlName} currentSlug={news.slug} tags={news.tags}/>}
                   <LatestNews initialData={{
                       articles: initialData2.articles.map(article => ({
                           ...article,

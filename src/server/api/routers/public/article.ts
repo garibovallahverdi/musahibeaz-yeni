@@ -6,6 +6,7 @@ import slugify from 'slugify';
 import { v4 as uuidv4 } from "uuid";
 import { ArticleStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import CategoryPage from "~/app/(admin)/admin/category/page";
 export const articleRouter = createTRPCRouter({
 
 
@@ -290,6 +291,7 @@ export const articleRouter = createTRPCRouter({
     .input(
       z.object({
         currentSlug: z.string(), 
+        category: z.string(),
         tags: z.array(
           z.object({
             name: z.string(),
@@ -300,18 +302,24 @@ export const articleRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       try {
         const tagNames = input.tags.map(tag => tag.name); 
-  
+      
         const news = await ctx.db.article.findMany({
           where: {
             slug: { not: input.currentSlug }, 
             status: ArticleStatus.PUBLISHED,
-            tags: {
-              some: {
-                name: {
-                  in: tagNames,
-                },
-              }, 
+            categorie: {
+               parent: {
+                  urlName: input.category
+                  }
             },
+            // tags: {
+            //   some: {
+            //     name: {
+            //       in: tagNames,
+            //     },
+            //   }, 
+            // },
+          
           },
           select: {
             id: true,
@@ -339,7 +347,8 @@ export const articleRouter = createTRPCRouter({
           },
           take: 6
         });
-  
+          
+        console.log(news, "related news aaaaaaaaaaaaaa");
         return news; 
       } catch (error) {
         if (error instanceof Error) {
