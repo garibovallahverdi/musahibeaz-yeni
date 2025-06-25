@@ -30,15 +30,7 @@ const Home = async () => {
             <MainPageCategpry category="i̇dman" header="İdman" />
             <MainPageCategpry category="turizm" header="Turizm" />
             <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
-            <MainPageCategpry category="i̇qti̇sadi̇yyat" header="İqtisadiyyat" />
+         
           </div>
         </div>
 
