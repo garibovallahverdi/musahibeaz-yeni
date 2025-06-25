@@ -25,7 +25,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className='bg-background'>
         <Navbar category={categoryData}  />
-        <div className=' mx-auto py-10 min-h-screen'>
+        <div className='container mx-auto py-10 min-h-screen'>
           {children}
         </div>
         <Footer />
