@@ -6,7 +6,6 @@ import slugify from 'slugify';
 import { v4 as uuidv4 } from "uuid";
 import { ArticleStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import CategoryPage from "~/app/(admin)/admin/category/page";
 export const articleRouter = createTRPCRouter({
 
 
@@ -43,15 +42,15 @@ export const articleRouter = createTRPCRouter({
           });
       
           if (!article) {
-            throw new Error("Makale bulunamadı");
+            throw new Error("Xəbər tapılmadı");
           }
   
           return {article};
         } catch (error) {
           if (error instanceof Error) {
-            throw new Error("Makale getirilirken hata oluştu: " + error.message);
+            throw new Error("İnternal server error: " + error.message);
           } else {
-            throw new Error("Makale getirilirken bilinmeyen bir hata oluştu");
+            throw new Error("İnternal server error");
           }
         }
       }),
@@ -124,9 +123,9 @@ export const articleRouter = createTRPCRouter({
           };
         } catch (error) {
           if (error instanceof Error) {
-            throw new Error("Makale getirilirken hata oluştu: " + error.message);
+            throw new Error("İnternal server error: " + error.message);
           } else {
-            throw new Error("Makale getirilirken bilinmeyen bir hata oluştu");
+            throw new Error("İnternal server error");
           }
         }
       }),
@@ -148,13 +147,14 @@ export const articleRouter = createTRPCRouter({
         },
       });
            if (!mainCategory) {
-        throw new Error("Belə bir kateqoriya tapılmadı");
+        throw new Error("İnternal server error");
       }
-            const categoryList =  [...mainCategory.children.map(child => child.urlName)];
+            const categoryList =  [mainCategory.urlName,...mainCategory.children.map(child => child.urlName)];
 
           const articles = await ctx.db.article.findMany({
             where: {
               status: ArticleStatus.PUBLISHED,
+              
                 categorie:{
                   urlName:{
                     in:categoryList
@@ -214,9 +214,9 @@ export const articleRouter = createTRPCRouter({
           };
         } catch (error) {
           if (error instanceof Error) {
-            throw new Error("Makale getirilirken hata oluştu: " + error.message);
+            throw new Error("İnternal server error : " + error.message);
           } else {
-            throw new Error("Makale getirilirken bilinmeyen bir hata oluştu");
+            throw new Error("İnternal server error");
           }
         }
       }),
@@ -271,7 +271,7 @@ export const articleRouter = createTRPCRouter({
           });
     
           if (!article) {
-            throw new Error("Makale bulunamadı");
+            throw new Error("Xəbər tapılmadı");
           }
     
           // await redis.set(cacheKey, JSON.stringify(article), "EX", 600);
@@ -280,9 +280,9 @@ export const articleRouter = createTRPCRouter({
           return article;
         } catch (error) {
           if (error instanceof Error) {
-            throw new Error("Makale getirilirken hata oluştu: " + error.message);
+            throw new Error("İnternal server error: " + error.message);
           } else {
-            throw new Error("Makale getirilirken bilinmeyen bir hata oluştu");
+            throw new Error("İnternal server error");
           }
         }
       }),
@@ -348,13 +348,13 @@ export const articleRouter = createTRPCRouter({
           take: 6
         });
           
-        console.log(news, "related news aaaaaaaaaaaaaa");
+      
         return news; 
       } catch (error) {
         if (error instanceof Error) {
-          throw new Error("Makale getirilirken hata oluştu: " + error.message);
+          throw new Error("İnternal server error: " + error.message);
         } else {
-          throw new Error("Makale getirilirken bilinmeyen bir hata oluştu");
+          throw new Error("İnternal server error");
         }
       }
     }),
@@ -404,9 +404,9 @@ export const articleRouter = createTRPCRouter({
       };
     } catch (error) {
       if(error instanceof Error) {
-        throw new Error("Makaleler alınırken hata oluştu: " + error.message);
+        throw new Error("İnternal server error: " + error.message);
       } else {
-        throw new Error("Makaleler alınırken bilinmeyen bir hata oluştu");
+        throw new Error("İnternal server error");
       } 
     }
   }),

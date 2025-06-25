@@ -15,7 +15,43 @@ type Category = {
   urlName: string;
   children: Category[]; // Recursive type for nested children
 };
- 
+ type Route = {
+  label: string;
+  href: string;
+  children: { label: string; href: string }[];
+};
+
+type SplitResult = {
+  parentCategories: Route[];
+  singleCategories: Route[];
+};
+
+export function splitCategories(categories: Category[]): SplitResult {
+  const parentCategories: Route[] = [];
+  const singleCategories: Route[] = [];
+
+  categories.forEach((c) => {
+    const hasChildren = c.children && c.children.length > 0;
+
+    const route: Route = {
+      label: c.name,
+      href: `/${c.urlName}`,
+      children: c.children.map((child) => ({
+        label: child.name,
+        href: `/${c.urlName}/${child.urlName}`,
+      })),
+    };
+
+    if (hasChildren) {
+      parentCategories.push(route);
+    } else {
+      singleCategories.push(route);
+    }
+  });
+
+  return { parentCategories, singleCategories };
+}
+
 
 const extraRoutes = [
   { href: "/about", label: "Haqqımızda" },
@@ -33,6 +69,7 @@ export default function Navbar({ category }: { category: Category[] }) {
   const [mobileMenu, setIsMobileMenu] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+const { parentCategories, singleCategories } = splitCategories(category);
 
     const allRoutes = [
       ...(category?.map((c) => {
@@ -65,46 +102,61 @@ useEffect(() => {
 
   
 
-  const mainLinks = allRoutes;
+  // const mainLinks = allRoutes
   const moreLinks = allRoutes
-  // const mainLinks = [
-  //   {
-  //     label:"Si̇yasət",
-  //     href: "/si̇yaset"
-  //   },
-  //      {
-  //     label:"İdman",
-  //     href: "/i̇dman"
-  //   },
-  //      {
-  //     label:"İqti̇sadi̇yyat",
-  //     href: "/i̇qti̇sadi̇yyat"
-  //   },
-  //      {
-  //     label:"Cəmi̇yyət",
-  //     href: "/cemi̇yyet"
-  //   },
+  const mainLinks = [
+        {
+      label:"Xəbərlər",
+      href: "/xeberler",
+      children: [],
+    },
+        {
+      label:"Si̇yasət",
+      href: "/si̇yaset",
+      children: [],
+    },
+       {
+      label:"İdman",
+      href: "/i̇dman",
+      children: [],
+    },
+       {
+      label:"İqti̇sadi̇yyat",
+      href: "/i̇qti̇sadi̇yyat",
+      children: [],
 
-  // ]
+    },
+       {
+      label:"Cəmi̇yyət",
+      href: "/cemi̇yyet",
+      children: [],
+
+    },
+
+    ...parentCategories,
+
+  ]
+
+
   return (
     <nav className="bg-background border-b  border-gray-200 dark:border-gray-700 shadow-sm z-50">
       {/* Mobil Menü */}
-      {mobileMenu && (
-        <div className="fixed inset-0 overflow-y-auto z-[999] bg-background dark:bg-gray-900 flex flex-col p-8">
-          <div className="flex justify-end items-center mb-6">
+         {mobileMenu && (
+        <div className="fixed inset-0 overflow-y-auto z-[999] bg-background dark:bg-gray-900 p-6">
+          <div className="flex justify-end mb-4">
             <MdOutlineCancel
               onClick={() => setIsMobileMenu(false)}
-              className="text-3xl cursor-pointer text-titleText hover:text-blue-600 transition-all"
+              className="text-3xl cursor-pointer text-titleText hover:text-blue-600 transition"
             />
           </div>
-          <div className="flex flex-col justify-start items-start space-y-4">
-            {allRoutes.map((route, idx) => (
-              <AccordionItem key={idx} route={route} />
-              
+          <div className="flex flex-col gap-4">
+            {[...singleCategories, ...parentCategories].map((route, idx) => (
+              <AccordionItem setIsMobileMenu={setIsMobileMenu} key={idx} route={route} />
             ))}
           </div>
         </div>
       )}
+
 
       {/* Desktop Navbar */}
       <div className="max-w-screen-xl relative mx-auto px-4 py-2">
@@ -117,9 +169,9 @@ useEffect(() => {
            
 
        
-          <div className="flex items-center justify-between  lg:w-auto space-x-4">
+          <div className="flex items-center justify-between  md:w-auto space-x-4">
 
-            <div className="hidden lg:block ">
+            <div className="hidden md:block ">
               <SocialMediLinks/>
             </div>
           {/* Sağ Butonlar */}
@@ -128,7 +180,7 @@ useEffect(() => {
             <button onClick={toggleTheme} className="p-2 text-gray-900 dark:text-white hover:text-blue-600">
               {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
             </button>
-            <button onClick={() => setIsMobileMenu(!mobileMenu)} className="lg:hidden p-2 text-gray-900 dark:text-white hover:text-blue-600">
+            <button onClick={() => setIsMobileMenu(!mobileMenu)} className="md:hidden p-2 text-gray-900 dark:text-white hover:text-blue-600">
               <FiMenu size={20} />
             </button>
           </div>
@@ -138,12 +190,35 @@ useEffect(() => {
 
           {/* Menü - Desktop */}
 
-        <div className="hidden w-full  lg:flex justify-center  py-2">
+        <div className="hidden w-full  md:flex justify-center  py-2">
 
-         <div className="items-center space-x-4  flex justify-between gap-5">
-          <div className="items-center space-x-4  flex w-auto     px-4 py-2 rounded-lg">
-
-            {mainLinks.map((link, idx) => (
+         <div className="items-center space-x-2  flex justify-between gap-1">
+          {mainLinks.map((link, idx) =>
+            link.children && link.children.length > 0 ? (
+              <div key={idx} className="relative group">
+                <button
+                  className="max-w-max uppercase whitespace-nowrap overflow-hidden text-gray-900 dark:text-white hover:text-blue-600 font-medium text-sm flex items-center gap-1"
+                  type="button"
+                >
+                  {link.label}
+                  <ChevronRight className="rotate-90 w-4 h-4" />
+                </button>
+                <div className="absolute left-0 top-full mt-2 min-w-[160px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity z-50">
+                  <div className="flex flex-col py-2">
+                    {link.children.map((child, cidx) => (
+                      <Link
+                        key={cidx}
+                        href={child.href}
+                        prefetch={false}
+                        className="px-4 py-2 text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ) : (
               <Link
                 key={idx}
                 href={link.href}
@@ -153,10 +228,9 @@ useEffect(() => {
               >
                 {link.label}
               </Link>
-            ))}
-          </div>
-
-            {moreLinks.length > 0 && (
+            )
+          )}
+ {moreLinks.length > 0 && (
               <div className="">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -171,30 +245,35 @@ useEffect(() => {
                     className="absolute left-0 top-full w-full  bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-lg mt-2 z-50"
                     onMouseLeave={() => setDropdownOpen(false)}
                   >
-                    <div className="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      {moreLinks.map((link, idx) => (
-                        <div key={idx} className="flex flex-col gap-2">
-                          <p
-                            // href={link.href}
-                            // prefetch={false}
-                            className="block uppercase text-sm font-semibold text-gray-900 dark:text-white  truncate"
-                          >
-                            {link.label}
-                          </p>
- <div className="flex flex-col gap-1">
-  {link.children.length > 0 &&
-    link.children.map(({href, label}, index) => (
-      <Link
-        key={index}
-        href={href}
-        prefetch={false}
-        className="block uppercase text-xs font-normal text-gray-900 dark:text-white hover:text-blue-600 truncate"
-      >
-        {label}
-      </Link>
-    ))}
-</div>
-                        </div>
+                    <div className="px-6 py-4 flex flex-wrap justify-center gap-x-10 gap-y-5">
+                      {[...singleCategories].map((link, idx) => (
+                         (
+                        <Link
+                          key={idx}
+                          href={link.href}
+                          prefetch={false}
+                          className="flex justify-center w-max items-center  border-2 rounded-full px-5 py-1 uppercase text-sm  text-gray-900 dark:text-white  truncate"
+                        >
+                          {truncateWords(link.label)}
+                          
+                        </Link>
+                        )
+//                     
+                      ))}
+
+                      {[...parentCategories].map((link) => (
+                          link.children.map((child,cidx)=> (
+                        <Link
+                          key={cidx}
+                          href={child.href}
+                          prefetch={false}
+                          className="block  border-2 rounded-full px-4 py-1 uppercase text-sm  text-gray-900 dark:text-white  truncate"
+                        >
+                          {truncateWords(child.label)}
+                        </Link>
+                        )
+                      )
+//                     
                       ))}
                     </div>
                   </div>

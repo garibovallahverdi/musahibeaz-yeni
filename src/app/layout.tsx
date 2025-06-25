@@ -9,7 +9,7 @@ import NextNProgress from "./providers/loader";
 import TopLoader from "./providers/loader";
 
 export const metadata: Metadata = {
-  title: "Musahibe.az - ",
+  title: "Musahibe.az",
   description: "Ən son xəbərlər burda",
   icons: [{ rel: "icon", url: "/logo.png" }],
 };
